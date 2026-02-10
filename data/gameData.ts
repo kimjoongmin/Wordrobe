@@ -18,7 +18,7 @@ export interface Level {
 export interface ShopItem {
   id: string;
   name?: string;
-  type: "avatar";
+  type: "avatar" | "background";
   cost: number;
   imagePath: string; // Restored path logic
   style?: React.CSSProperties; // Custom positioning
@@ -137,10 +137,53 @@ export const LEVELS: Level[] = [
 
 export const SHOP_ITEMS: ShopItem[] = Array.from({ length: 20 }, (_, i) => ({
   id: `avatar${String(i + 1).padStart(2, "0")}`, // avatar01, avatar02...
-  // name: `Avatar ${i + 1}`,
+  name: `Avatar ${i + 1}`,
   type: "avatar",
   cost: 500 * (i + 1), // 500, 1000, 1500...
   imagePath: getAssetPath(
     `/assets/character/avatar${String(i + 1).padStart(2, "0")}.png`,
   ),
 }));
+
+export const BACKGROUND_ITEMS: ShopItem[] = [
+  {
+    id: "bg_default", // Default (Hidden/Empty)
+    name: "Default",
+    type: "background",
+    cost: 0,
+    imagePath: "",
+    style: { backgroundColor: "transparent" },
+  },
+  ...Array.from({ length: 12 }, (_, i) => {
+    const num = i + 1;
+    const formattedNum = num < 10 ? `0${num}` : num;
+    const titles = [
+      "Cozy Morning",
+      "Midnight Study",
+      "Pink Palace",
+      "Kitty Lounge",
+      "Forest Magic",
+      "Toy Kingdom",
+      "Deep Ocean",
+      "Picnic Time",
+      "Space Lab",
+      "Sweet Cafe",
+      "Dreamy Sky",
+      "Fairy Garden",
+    ];
+
+    return {
+      id: `bg_room_${formattedNum}`,
+      name: titles[i],
+      type: "background" as const,
+      cost: 1000 * num,
+      imagePath: `/assets/background_room/background_room${formattedNum}.png`,
+      style: {
+        backgroundImage: `url(/assets/background_room/background_room${formattedNum}.png)`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      },
+    };
+  }),
+];

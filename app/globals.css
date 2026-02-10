@@ -8,6 +8,15 @@
   --font-sans: "Varela Round", system-ui, sans-serif;
 }
 
+/* Mobile-friendly active state */
+button {
+  transition: transform 0.1s ease;
+}
+
+button:active {
+  transform: scale(0.95);
+}
+
 body {
   /* Halo Gradient Background */
   background: radial-gradient(
@@ -45,6 +54,11 @@ html {
   height: 100%;
   overflow: hidden;
   overscroll-behavior: none;
+  /* Prevent tap highlight on mobile */
+  -webkit-tap-highlight-color: transparent;
+  /* Prevent text selection for a more app-like feel */
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 /* Glassmorphism Utilities */

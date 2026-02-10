@@ -1,12 +1,14 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import Draggable from "react-draggable";
 import AvatarDisplay from "@/components/AvatarDisplay";
 import SentenceBuilder from "@/components/SentenceBuilder";
 import Shop from "@/components/Shop";
-import { ShopItem, fetchSentences } from "@/data/gameData"; // Removed LEVELS import
+import { ShopItem, fetchSentences, BACKGROUND_ITEMS } from "@/data/gameData"; // Removed LEVELS import
 import sentencesData from "@/data/sentences.json"; // Direct Import (Simulates API)
 import { useKakaoBrowserEscape } from "@/hooks/useKakaoBrowserEscape";
+import { soundManager } from "@/utils/SoundManager";
 
 interface LevelData {
   id: number;
@@ -27,12 +29,15 @@ export default function Home() {
   const [ownedItems, setOwnedItems] = useState<string[]>([]);
   // Single Avatar State, defaults to base
   const [equippedAvatar, setEquippedAvatar] = useState<string>("avatar_base");
+  const [equippedBackground, setEquippedBackground] =
+    useState<string>("bg_default");
   const [cheatCount, setCheatCount] = useState(0);
 
   // Mobile Tab State
   const [activeTab, setActiveTab] = useState<"play" | "shop">("play");
 
   const [isHydrated, setIsHydrated] = useState(false);
+  const avatarRef = useRef<HTMLDivElement>(null);
 
   // --- Persistence Logic ---
   useEffect(() => {
@@ -41,13 +46,18 @@ export default function Home() {
     const savedLevel = localStorage.getItem("wordrobe_level");
     const savedOwned = localStorage.getItem("wordrobe_owned");
     const savedEquipped = localStorage.getItem("wordrobe_equipped");
+    const savedBg = localStorage.getItem("wordrobe_bg_equipped");
 
     if (savedPoints) setPoints(Number(savedPoints));
     if (savedLevel) setCurrentLevelId(Number(savedLevel));
     if (savedOwned) setOwnedItems(JSON.parse(savedOwned));
     if (savedEquipped) setEquippedAvatar(savedEquipped);
+    if (savedBg) setEquippedBackground(savedBg);
 
     setIsHydrated(true); // ✅ Mark as hydrated after loading
+
+    // Initialize sound manager on mount
+    soundManager.init();
   }, []);
 
   // ... (Save effects remain same) ...
@@ -68,6 +78,10 @@ export default function Home() {
   useEffect(() => {
     localStorage.setItem("wordrobe_equipped", equippedAvatar);
   }, [equippedAvatar]);
+
+  useEffect(() => {
+    localStorage.setItem("wordrobe_bg_equipped", equippedBackground);
+  }, [equippedBackground]);
 
   // --- 2. API Integration (Simulated with JSON) ---
   // Instead of hardcoded LEVELS, we generate levels dynamically from our "Database" (sentences.json)
@@ -188,12 +202,20 @@ export default function Home() {
       setOwnedItems((prev) => [...prev, item.id]);
 
       // Auto-Equip on Buy (User Request)
-      setEquippedAvatar(item.id);
+      if (item.type === "avatar") {
+        setEquippedAvatar(item.id);
+      } else if (item.type === "background") {
+        setEquippedBackground(item.id);
+      }
     }
   };
 
   const handleEquip = (item: ShopItem) => {
-    setEquippedAvatar(item.id);
+    if (item.type === "avatar") {
+      setEquippedAvatar(item.id);
+    } else if (item.type === "background") {
+      setEquippedBackground(item.id);
+    }
   };
 
   const handleHint = () => {
@@ -209,13 +231,16 @@ export default function Home() {
   return (
     // --- 1. Mobile Layout Wrapper ---
     // Background fills screen, but content is constrained to "Mobile Width" (max-w-md) and centered.
-    <main className="h-full w-full bg-slate-100 flex items-center justify-center font-sans overflow-hidden">
+    <main
+      className="h-screen w-full bg-slate-100 flex items-center justify-center font-sans overflow-hidden"
+      onClick={() => soundManager.playBGM()} // Auto-play BGM on first interaction
+    >
       {/* Mobile Device Container */}
       <div
-        className="w-full max-w-md h-full bg-pink-50 flex flex-col relative shadow-2xl overflow-hidden md:rounded-3xl md:h-[95vh] md:border-8 md:border-gray-800"
+        className="w-full max-w-md h-full bg-pink-50 flex flex-col relative shadow-2xl overflow-hidden md:rounded-3xl md:h-[95vh] md:border-8 md:border-gray-800 transition-all duration-500 ease-out"
         style={{
           paddingTop: "max(env(safe-area-inset-top))",
-          paddingBottom: "max(env(safe-area-inset-bottom), 20px)",
+          paddingBottom: "max(env(safe-area-inset-bottom))",
         }}
       >
         {/* Background Ambience handled in globals.css */}
@@ -225,6 +250,7 @@ export default function Home() {
           <h1
             className="text-xl font-black tracking-tight flex items-center gap-2 select-none active:scale-95 transition-transform cursor-pointer"
             onClick={() => {
+              soundManager.playSound("click");
               const newCount = cheatCount + 1;
               setCheatCount(newCount);
               console.log("Cheat Count:", newCount); // Debug
@@ -249,27 +275,39 @@ export default function Home() {
 
         {/* Scrollable Content Area */}
         {/* We use flex-1 and overflow-y-auto to ensure scrolling happens INSIDE this container */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col pb-20">
+        <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col ">
           {/* --- 3. Avatar Visibility Fix --- */}
           {/* Added min-height and proper scaling to ensure it's never 0 height */}
-          <div className="w-full flex justify-center py-1 bg-gradient-to-b from-pink-100/50 to-transparent shrink-0">
-            {/* Outer container: relative for sizing, flex for centering */}
-            <div className="relative w-64 h-64 md:w-72 md:h-72 aspect-square drop-shadow-2xl flex items-center justify-center">
-              {/* Inner container: fixed size */}
-              <div className="relative w-[220px] h-[220px] aspect-square drop-shadow-2xl">
-                {/* Only render avatar after hydration to prevent flicker */}
-                {isHydrated && (
-                  <AvatarDisplay
-                    avatarId={equippedAvatar}
-                    className="w-full h-full object-contain"
-                  />
-                )}
-              </div>
+          <div className="w-full flex justify-center bg-transparent shrink-0">
+            <div className="relative w-full aspect-[4/3] max-h-[400px] flex items-center justify-center overflow-hidden md:rounded-3xl">
+              {/* Background Layer */}
+              <div
+                className="absolute inset-0 transition-all duration-500 ease-out z-0"
+                style={
+                  BACKGROUND_ITEMS.find((b) => b.id === equippedBackground)
+                    ?.style || { background: "transparent" }
+                }
+              />
+              {/* Inner container: fixed size for Avatar */}
+              <Draggable nodeRef={avatarRef} bounds="parent">
+                <div
+                  ref={avatarRef}
+                  className="relative w-[220px] h-[220px] aspect-square drop-shadow-2xl z-10 cursor-move active:cursor-grabbing"
+                >
+                  {/* Only render avatar after hydration to prevent flicker */}
+                  {isHydrated && (
+                    <AvatarDisplay
+                      avatarId={equippedAvatar}
+                      className="w-full h-full object-contain pointer-events-none"
+                    />
+                  )}
+                </div>
+              </Draggable>
             </div>
           </div>
 
           {/* Dynamic Content Section */}
-          <div className="flex-1 bg-white/60 backdrop-blur-md  shadow-[0_-5px_20px_rgba(0,0,0,0.05)] border-t border-white/80 p-4 min-h-[450px]">
+          <div className="flex-1 bg-white/60 backdrop-blur-md  shadow-[0_-5px_20px_rgba(0,0,0,0.05)] border-t border-white/80 p-4 min-h-[450px] pb-20">
             {/* Tab Content */}
             {activeTab === "play" ? (
               <div className="h-full flex flex-col">
@@ -280,9 +318,10 @@ export default function Home() {
                     <div className="relative">
                       <select
                         value={currentLevelId}
-                        onChange={(e) =>
-                          setCurrentLevelId(Number(e.target.value))
-                        }
+                        onChange={(e) => {
+                          soundManager.playSound("click");
+                          setCurrentLevelId(Number(e.target.value));
+                        }}
                         className="appearance-none bg-pink-100 border border-pink-200 text-pink-600 font-bold py-1 pl-3 pr-8 rounded-full text-lg focus:outline-none focus:ring-2 focus:ring-pink-400"
                       >
                         {/* 10 Distinct Levels */}
@@ -338,6 +377,7 @@ export default function Home() {
                 onBuy={handleBuy}
                 onEquip={handleEquip}
                 equippedAvatar={equippedAvatar}
+                equippedBackground={equippedBackground}
               />
             )}
           </div>
@@ -346,7 +386,10 @@ export default function Home() {
         {/* --- 1. Mobile Bottom Navigation --- */}
         <nav className="absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-white/90 backdrop-blur-xl p-1.5 rounded-full shadow-2xl border border-white/60 flex gap-1 z-50">
           <button
-            onClick={() => setActiveTab("play")}
+            onClick={() => {
+              soundManager.playSound("click");
+              setActiveTab("play");
+            }}
             className={`px-6 py-3 rounded-full font-bold text-sm transition-all flex items-center gap-2
                     ${
                       activeTab === "play"
@@ -358,7 +401,10 @@ export default function Home() {
             <span>🎮</span> Play
           </button>
           <button
-            onClick={() => setActiveTab("shop")}
+            onClick={() => {
+              soundManager.playSound("click");
+              setActiveTab("shop");
+            }}
             className={`px-6 py-3 rounded-full font-bold text-sm transition-all flex items-center gap-2
                     ${
                       activeTab === "shop"

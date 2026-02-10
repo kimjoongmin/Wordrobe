@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 // Removed unused Level import
+import { soundManager } from "@/utils/SoundManager";
 
 // Define SpeechRecognition types locally since they are not standard in all TS environments yet
 interface SpeechRecognitionEvent {
@@ -259,6 +260,7 @@ export default function SentenceBuilder({
 
   const handleWordClick = (wordText: string, wordId: string) => {
     if (isSuccess) return;
+    soundManager.playSound("pop");
     setSelectedWords((prev) => [...prev, wordText]);
     setAvailableWords((prev) => prev.filter((w) => w.id !== wordId));
     setIsWrong(false);
@@ -277,6 +279,7 @@ export default function SentenceBuilder({
   const handleRemoveWord = (wordText: string, idxToRemove: number) => {
     if (isSuccess) return;
     const newSelected = selectedWords.filter((_, i) => i !== idxToRemove);
+    soundManager.playSound("click");
     setSelectedWords(newSelected);
     setAvailableWords((prev) => [
       ...prev,
@@ -292,6 +295,7 @@ export default function SentenceBuilder({
 
     if (constructed === target) {
       setIsSuccess(true);
+      soundManager.playSound("success");
       speak(target);
       successHandledRef.current = true;
 
@@ -315,6 +319,7 @@ export default function SentenceBuilder({
       */
     } else {
       setIsWrong(true);
+      soundManager.playSound("fail");
       setTimeout(() => {
         setIsWrong(false);
       }, 1000);

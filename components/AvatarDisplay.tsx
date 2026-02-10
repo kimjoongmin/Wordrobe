@@ -21,13 +21,11 @@ export default function AvatarDisplay({
     : getAssetPath("/assets/character/avatar_base.png");
 
   return (
-    <div
-      className={`relative ${className} bg-white/40 rounded-full border-4 border-white overflow-hidden shadow-lg mx-auto backdrop-blur-sm halo-glow`}
-    >
+    <div className={`relative ${className} mx-auto`}>
       <img
         src={imagePath}
         alt="Avatar"
-        className="absolute inset-0 w-full h-full object-contain"
+        className="absolute inset-0 w-full h-full object-contain drop-shadow-xl"
       />
     </div>
   );
