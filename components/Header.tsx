@@ -14,7 +14,7 @@ export default function Header({
   onLogoClick,
 }: HeaderProps) {
   return (
-    <header className="flex justify-between items-center px-4 py-3 bg-white/70 backdrop-blur-xl shadow-sm border-b border-white/40 sticky top-0 z-40 shrink-0 h-16">
+    <header className="flex justify-between items-center px-4 py-3 bg-white/70 backdrop-blur-xl shadow-sm border-b border-white/40 sticky top-0 z-40 shrink-0 h-14">
       {/* Left: Hamburger Menu */}
       <button
         onClick={onMenuClick}
