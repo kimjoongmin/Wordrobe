@@ -214,7 +214,7 @@ export default function Home() {
       <div
         className="w-full max-w-md h-full bg-pink-50 flex flex-col relative shadow-2xl overflow-hidden md:rounded-3xl md:h-[95vh] md:border-8 md:border-gray-800"
         style={{
-          paddingTop: "max(env(safe-area-inset-top), 20px)",
+          paddingTop: "max(env(safe-area-inset-top))",
           paddingBottom: "max(env(safe-area-inset-bottom), 20px)",
         }}
       >

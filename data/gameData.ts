@@ -1,4 +1,5 @@
 import { parseCSV } from "../utils/csvParser";
+import { getAssetPath } from "../utils/paths";
 
 export interface Word {
   id: string;
@@ -139,5 +140,7 @@ export const SHOP_ITEMS: ShopItem[] = Array.from({ length: 20 }, (_, i) => ({
   // name: `Avatar ${i + 1}`,
   type: "avatar",
   cost: 500 * (i + 1), // 500, 1000, 1500...
-  imagePath: `/assets/character/avatar${String(i + 1).padStart(2, "0")}.png`,
+  imagePath: getAssetPath(
+    `/assets/character/avatar${String(i + 1).padStart(2, "0")}.png`,
+  ),
 }));

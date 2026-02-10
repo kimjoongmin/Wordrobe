@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "deploy": "gh-pages -d out --dotfiles"
+    "deploy": "NEXT_PUBLIC_GITHUB_PAGES=true GITHUB_PAGES=true npm run build && gh-pages -d out --dotfiles"
   },
   "dependencies": {
     "@capacitor-community/text-to-speech": "^8.0.0",

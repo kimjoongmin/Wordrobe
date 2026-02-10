@@ -2,6 +2,7 @@
 
 import React from "react";
 import { SHOP_ITEMS } from "../data/gameData";
+import { getAssetPath } from "../utils/paths";
 // We don't import SPRITE_CONFIG anymore as we are using direct images.
 
 interface AvatarProps {
@@ -15,7 +16,9 @@ export default function AvatarDisplay({
 }: AvatarProps) {
   // Find item data or default to base
   const item = SHOP_ITEMS.find((i) => i.id === avatarId);
-  const imagePath = item ? item.imagePath : "/assets/character/avatar_base.png";
+  const imagePath = item
+    ? item.imagePath
+    : getAssetPath("/assets/character/avatar_base.png");
 
   return (
     <div

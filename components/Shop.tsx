@@ -2,6 +2,7 @@
 
 import React from "react";
 import { ShopItem, SHOP_ITEMS } from "../data/gameData";
+import { getAssetPath } from "../utils/paths";
 
 interface ShopProps {
   points: number;
@@ -56,8 +57,9 @@ export default function Shop({
                     alt={item.name || `Avatar ${item.id.replace("avatar", "")}`}
                     className="w-full h-full object-contain"
                     onError={(e) => {
-                      (e.target as HTMLImageElement).src =
-                        "/assets/character/avatar_base.png";
+                      (e.target as HTMLImageElement).src = getAssetPath(
+                        "/assets/character/avatar_base.png",
+                      );
                     }}
                   />
                 </div>
