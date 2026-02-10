@@ -30,6 +30,8 @@ declare module "react-draggable" {
     position?: { x: number; y: number };
     positionOffset?: { x: number | string; y: number | string };
     scale?: number;
+    allowMobileScroll?: boolean;
+    enableUserSelectHack?: boolean;
   }
 
   export default class Draggable extends React.Component<DraggableProps, any> {}

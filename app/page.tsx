@@ -5,6 +5,8 @@ import Draggable from "react-draggable";
 import AvatarDisplay from "@/components/AvatarDisplay";
 import SentenceBuilder from "@/components/SentenceBuilder";
 import Shop from "@/components/Shop";
+import Header from "@/components/Header";
+import SideMenu from "@/components/SideMenu";
 import { ShopItem, fetchSentences, BACKGROUND_ITEMS } from "@/data/gameData"; // Removed LEVELS import
 import sentencesData from "@/data/sentences.json"; // Direct Import (Simulates API)
 import { useKakaoBrowserEscape } from "@/hooks/useKakaoBrowserEscape";
@@ -35,6 +37,7 @@ export default function Home() {
 
   // Mobile Tab State
   const [activeTab, setActiveTab] = useState<"play" | "shop">("play");
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const [isHydrated, setIsHydrated] = useState(false);
   const avatarRef = useRef<HTMLDivElement>(null);
@@ -64,24 +67,29 @@ export default function Home() {
 
   // Save data whenever it changes
   useEffect(() => {
+    if (!isHydrated) return;
     localStorage.setItem("wordrobe_points", points.toString());
-  }, [points]);
+  }, [points, isHydrated]);
 
   useEffect(() => {
+    if (!isHydrated) return;
     localStorage.setItem("wordrobe_level", currentLevelId.toString());
-  }, [currentLevelId]);
+  }, [currentLevelId, isHydrated]);
 
   useEffect(() => {
+    if (!isHydrated) return;
     localStorage.setItem("wordrobe_owned", JSON.stringify(ownedItems));
-  }, [ownedItems]);
+  }, [ownedItems, isHydrated]);
 
   useEffect(() => {
+    if (!isHydrated) return;
     localStorage.setItem("wordrobe_equipped", equippedAvatar);
-  }, [equippedAvatar]);
+  }, [equippedAvatar, isHydrated]);
 
   useEffect(() => {
+    if (!isHydrated) return;
     localStorage.setItem("wordrobe_bg_equipped", equippedBackground);
-  }, [equippedBackground]);
+  }, [equippedBackground, isHydrated]);
 
   // --- 2. API Integration (Simulated with JSON) ---
   // Instead of hardcoded LEVELS, we generate levels dynamically from our "Database" (sentences.json)
@@ -245,33 +253,26 @@ export default function Home() {
       >
         {/* Background Ambience handled in globals.css */}
 
-        {/* Top Bar (Sticky) */}
-        <header className="flex justify-between items-center px-5 py-3 bg-white/70 backdrop-blur-xl shadow-sm border-b border-white/40 sticky top-0 z-50 shrink-0">
-          <h1
-            className="text-xl font-black tracking-tight flex items-center gap-2 select-none active:scale-95 transition-transform cursor-pointer"
-            onClick={() => {
-              soundManager.playSound("click");
-              const newCount = cheatCount + 1;
-              setCheatCount(newCount);
-              console.log("Cheat Count:", newCount); // Debug
+        {/* Side Menu */}
+        <SideMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
 
-              if (newCount >= 5) {
-                setPoints((prev) => prev + 5000);
-                alert("🦸‍♂️ 아빠가 용돈 5000원 줬다! (Daddy's Chance Applied)");
-                setCheatCount(0); // Reset
-              }
-            }}
-          >
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-violet-500 drop-shadow-sm">
-              Wordrobe
-            </span>
-          </h1>
-          <div className="flex gap-2 items-center">
-            <div className="bg-white/80 px-3 py-1 rounded-full font-bold text-yellow-600 shadow-inner border border-yellow-200 flex items-center gap-1 text-sm">
-              <span>💰</span> {points}
-            </div>
-          </div>
-        </header>
+        {/* Top Bar (Sticky) */}
+        <Header
+          points={points}
+          onMenuClick={() => setIsMenuOpen(true)}
+          onLogoClick={() => {
+            soundManager.playSound("click");
+            const newCount = cheatCount + 1;
+            setCheatCount(newCount);
+            // console.log("Cheat Count:", newCount); // Debug
+
+            if (newCount >= 10) {
+              setPoints((prev) => prev + 5000);
+              alert("🦸‍♂️ 아빠가 용돈 5000원 줬다! (Daddy's Chance Applied)");
+              setCheatCount(0); // Reset
+            }
+          }}
+        />
 
         {/* Scrollable Content Area */}
         {/* We use flex-1 and overflow-y-auto to ensure scrolling happens INSIDE this container */}

@@ -75,6 +75,15 @@ export default function SentenceBuilder({
 
   const currentSentence = level.sentences[currentSentenceIndex];
 
+  // Scoring Logic Helper
+  const getPointsForLevel = (levelId: number) => {
+    if (levelId <= 3) return 10;
+    if (levelId <= 7) return 20;
+    return 30; // Levels 8-10+
+  };
+
+  const pointsPerAction = getPointsForLevel(level.id);
+
   // STT State
   useEffect(() => {
     const currentSentence = level.sentences[currentSentenceIndex];
@@ -213,16 +222,12 @@ export default function SentenceBuilder({
         setSttFeedback("perfect");
 
         // Speak encouragement
-        speak("Perfect! +10 Points"); // User requested this here
+        speak(`Perfect! +${pointsPerAction} Points`); // Dynamic Points
 
         // Award Bonus Points (once per sentence)
         if (!bonusAwarded) {
-          // Additional points for speech? Or simply proceeding?
-          // User said "Perfect +10 point voice...", maybe additional points?
-          // Let's verify onComplete usage. It adds to total points.
-          // We can give another 10 points or just proceed.
-          // Assuming user wants the interaction:
-          onComplete(10);
+          // Additional points for speech
+          onComplete(pointsPerAction);
           setBonusAwarded(true);
 
           // Auto-advance after delay
@@ -268,11 +273,21 @@ export default function SentenceBuilder({
 
   const handleReset = () => {
     if (isSuccess) return;
-    const words = currentSentence.english.map((word, idx) => ({
+    const words = currentSentence.english.map(
+      (word, idx) =>
+        ({
+          id: `${word}-${idx}`,
+          text: word,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } as any),
+    ); // Quick fix for type inference if needed, though mapped correctly above
+    // Reconstructing to be safe
+    const rehydratedWords = currentSentence.english.map((word, idx) => ({
       id: `${word}-${idx}`,
       text: word,
     }));
-    setAvailableWords([...words].sort(() => Math.random() - 0.5));
+
+    setAvailableWords([...rehydratedWords].sort(() => Math.random() - 0.5));
     setSelectedWords([]);
   };
 
@@ -300,23 +315,10 @@ export default function SentenceBuilder({
       successHandledRef.current = true;
 
       // Points for correct sentence construction
-      onComplete(10);
+      onComplete(pointsPerAction);
 
       // Removed auto-advance. User must now use Mic to proceed.
       // "Correct" UI will be shown, prompting for Speech.
-
-      /* 
-      // OLD AUTO ADVANCE
-      setTimeout(() => {
-        if (currentSentenceIndex < level.sentences.length - 1) {
-           setCurrentSentenceIndex((prev) => prev + 1);
-        } else {
-           alert("Level Complete! Great job! 🎉");
-           setCurrentSentenceIndex(0);
-           onLevelComplete();
-        }
-      }, 2000);
-      */
     } else {
       setIsWrong(true);
       soundManager.playSound("fail");
@@ -475,7 +477,7 @@ export default function SentenceBuilder({
             )}
             {sttFeedback === "perfect" && (
               <span className="text-green-500 font-bold text-xl">
-                Perfect! +10 Points 🌟
+                Perfect! +{pointsPerAction} Points 🌟
               </span>
             )}
             {sttFeedback === "try_again" && (
