@@ -13,6 +13,8 @@ import { ShopItem, fetchSentences } from "@/data/gameData"; // Removed LEVELS & 
 import sentencesData from "@/data/sentences.json"; // Direct Import (Simulates API)
 import { useKakaoBrowserEscape } from "@/hooks/useKakaoBrowserEscape";
 import { soundManager } from "@/utils/SoundManager";
+import SplashScreen from "@/components/SplashScreen";
+import MainMenu from "@/components/MainMenu";
 
 interface LevelData {
   id: number;
@@ -28,6 +30,10 @@ export default function Home() {
   const [currentLevelId, setCurrentLevelId] = useState(1);
   const [levelData, setLevelData] = useState<LevelData | null>(null);
   const [loading, setLoading] = useState(true);
+  // View State: 'splash' -> 'menu' -> 'play' | 'shop'
+  const [viewMode, setViewMode] = useState<"splash" | "menu" | "play" | "shop">(
+    "splash",
+  );
 
   // Shop State
   const [ownedItems, setOwnedItems] = useState<string[]>([]);
@@ -238,6 +244,49 @@ export default function Home() {
     }
   };
 
+  // --- Render ---
+  if (viewMode === "splash") {
+    return <SplashScreen onStart={() => setViewMode("menu")} />;
+  }
+
+  if (viewMode === "menu") {
+    return (
+      <MainMenu
+        onPlay={() => {
+          setActiveTab("play");
+          setViewMode("play");
+          soundManager.playSound("click");
+        }}
+        onShop={() => {
+          setActiveTab("shop");
+          setViewMode("shop");
+          soundManager.playSound("click");
+        }}
+      />
+    );
+  }
+
+  // Common Loading for Game Data
+  if (loading && viewMode === "play") {
+    // Only show loading if we are trying to play, otherwise menu is fine.
+    // Actually data loads in background. Let's keep loading check.
+  }
+
+  // If we are in 'play' or 'shop', we show the main app structure (or separate them?)
+  // The original app used 'activeTab' to switch between Shop and SentenceBuilder within the same layout.
+  // We can preserve that structure but wrapping it.
+
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-slate-50">
+        <div className="text-center animate-pulse">
+          <div className="text-6xl mb-4">👸</div>
+          <p className="text-slate-400 font-medium tracking-wide">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     // --- 1. Mobile Layout Wrapper ---
     // Background fills screen, but content is constrained to "Mobile Width" (max-w-md) and centered.
@@ -287,7 +336,7 @@ export default function Home() {
           />
 
           {/* Dynamic Content Section */}
-          <div className="flex-1 bg-white/60 backdrop-blur-md  shadow-[0_-5px_20px_rgba(0,0,0,0.05)] border-t border-white/80 p-4 min-h-[450px] pb-20">
+          <div className="flex-1 bg-white/60 backdrop-blur-md  shadow-[0_-5px_20px_rgba(0,0,0,0.05)] border-t border-white/80 p-2 min-h-[450px] pb-20">
             {/* Tab Content */}
             {activeTab === "play" ? (
               <div className="h-full flex flex-col">

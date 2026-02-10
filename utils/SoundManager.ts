@@ -1,5 +1,7 @@
 "use client";
 
+import { getAssetPath } from "./paths";
+
 class SoundManager {
   private static instance: SoundManager;
   private bgm: HTMLAudioElement | null = null;
@@ -25,7 +27,7 @@ class SoundManager {
 
     const soundEffects = ["click", "success", "fail", "pop"];
     soundEffects.forEach((name) => {
-      const audio = new Audio(`/sound/${name}.wav`);
+      const audio = new Audio(getAssetPath(`/sound/${name}.ogg`));
       audio.preload = "auto";
       this.sounds.set(name, audio);
     });

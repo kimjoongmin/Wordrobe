@@ -340,7 +340,7 @@ export default function SentenceBuilder({
   };
 
   return (
-    <div className="flex flex-col items-center w-full max-w-lg mx-auto p-4 py-4 h-full relative">
+    <div className="flex flex-col items-center w-full max-w-lg mx-auto p-2 py-4 h-full relative">
       {/* Progress Bar */}
       <div className="w-full h-2 bg-gray-200 rounded-full mb-5 shrink-0 overflow-hidden">
         <div

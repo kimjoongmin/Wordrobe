@@ -152,7 +152,7 @@ export default function VocabularyBuilder({
   };
 
   return (
-    <div className="flex flex-col items-center w-full max-w-lg mx-auto p-4 py-4 h-full relative">
+    <div className="flex flex-col items-center w-full max-w-lg mx-auto p-2 py-4 h-full relative">
       {/* Progress Bar */}
       <div className="w-full h-2 bg-gray-200 rounded-full mb-5 shrink-0 overflow-hidden">
         <div
@@ -219,7 +219,7 @@ export default function VocabularyBuilder({
                 key={item.id}
                 onClick={() => handleLetterClick(item.char, item.id)}
                 className="
-                  bg-white hover:bg-gray-50 text-gray-600 font-bold py-2 px-3 md:py-3 md:px-5 rounded-xl md:rounded-2xl text-sm md:text-base 
+                  bg-white hover:bg-gray-50 text-gray-600 font-bold py-1.5 px-2.5 md:py-2 md:px-4 rounded-xl md:rounded-2xl text-xs md:text-sm 
                   shadow-[0_2px_0_0_rgba(0,0,0,0.1)] border-2 border-transparent hover:border-blue-100
                   active:translate-y-[2px] active:shadow-none transition-all
                   flex items-center justify-center
@@ -233,10 +233,10 @@ export default function VocabularyBuilder({
       </div>
 
       {/* Control Buttons */}
-      <div className="flex gap-3 w-full shrink-0 mt-auto pt-4 border-t border-gray-100/50">
+      <div className="flex gap-3 w-full shrink-0 mt-auto pt-1 border-t border-gray-100/50">
         <button
           onClick={handleHintClick}
-          className="w-16 h-16 flex items-center justify-center rounded-2xl bg-yellow-100 text-yellow-500 hover:bg-yellow-200 hover:text-yellow-600 transition-colors border-2 border-yellow-200"
+          className="w-14 h-14 flex items-center justify-center rounded-2xl bg-yellow-100 text-yellow-500 hover:bg-yellow-200 hover:text-yellow-600 transition-colors border-2 border-yellow-200"
           title="Hint (-20 pts)"
         >
           💡
@@ -244,7 +244,7 @@ export default function VocabularyBuilder({
         <button
           onClick={checkWord}
           disabled={selectedLetters.length === 0}
-          className={`flex-1 h-16 rounded-2xl font-black text-white shadow-lg transition-all active:scale-95 text-xl tracking-wide flex items-center justify-center gap-2 ${
+          className={`flex-1 h-14 rounded-2xl font-black text-white shadow-lg transition-all active:scale-95 text-lg tracking-wide flex items-center justify-center gap-2 ${
             selectedLetters.length > 0
               ? "bg-gradient-to-r from-blue-500 to-cyan-500 shadow-blue-200 hover:shadow-blue-300"
               : "bg-gray-200 text-gray-400 shadow-none cursor-not-allowed"
