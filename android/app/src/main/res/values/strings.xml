@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<resources>
+    <string name="app_name">Wordrobe</string>
+    <string name="title_activity_main">Wordrobe</string>
+    <string name="package_name">com.kjm.wordrobeapp</string>
+    <string name="custom_url_scheme">com.kjm.wordrobeapp</string>
+</resources>
