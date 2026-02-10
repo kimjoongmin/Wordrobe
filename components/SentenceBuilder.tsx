@@ -352,20 +352,20 @@ export default function SentenceBuilder({
       </div>
 
       {/* Main Game Content */}
-      <div className="flex-1 w-full flex flex-col justify-center space-y-2 md:space-y-4 min-h-0 overflow-hidden">
+      <div className="flex-1 w-full flex flex-col justify-center space-y-1 md:space-y-2 min-h-0 overflow-hidden">
         <div className="w-full text-center space-y-1 shrink-0">
           <span className="text-xs font-bold text-gray-400 uppercase tracking-widest block">
             Translate this
           </span>
-          <h2 className="text-xl md:text-3xl font-black text-gray-700 leading-tight halo-text break-keep">
+          <h2 className="text-lg md:text-2xl font-black text-gray-700 leading-tight halo-text break-keep">
             {currentSentence?.korean}
           </h2>
         </div>
 
         <div
           className={`
-            min-h-[60px] md:min-h-[80px] w-full bg-white/50 rounded-2xl border-2 border-dashed
-            flex flex-wrap items-center justify-center gap-2 p-3 transition-all duration-300 shrink-0
+            min-h-[50px] md:min-h-[70px] w-full bg-white/50 rounded-2xl border-2 border-dashed
+            flex flex-wrap items-center justify-center gap-2 p-2 transition-all duration-300 shrink-0
             ${
               isWrong
                 ? "border-red-300 bg-red-50/50 shake ring-2 ring-red-200"
@@ -406,7 +406,7 @@ export default function SentenceBuilder({
                 key={word.id}
                 onClick={() => handleWordClick(word.text, word.id)}
                 className="
-                  bg-white hover:bg-gray-50 text-gray-600 font-bold py-2 px-3 md:py-3 md:px-5 rounded-xl md:rounded-2xl text-sm md:text-base 
+                  bg-white hover:bg-gray-50 text-gray-600 font-bold py-1.5 px-2.5 md:py-2 md:px-4 rounded-xl md:rounded-2xl text-xs md:text-sm 
                   shadow-[0_2px_0_0_rgba(0,0,0,0.1)] border-2 border-transparent hover:border-pink-100
                   active:translate-y-[2px] active:shadow-none transition-all
                 "

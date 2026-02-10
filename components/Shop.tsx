@@ -33,7 +33,7 @@ export default function Shop({
     <div className="flex flex-col h-full bg-transparent rounded-[2rem] overflow-hidden">
       {/* Header */}
       <div className="flex flex-col border-b border-white/20 sticky top-0 z-10 glass backdrop-blur-xl">
-        <div className="p-4 flex justify-between items-center">
+        <div className="mb-2 flex justify-between items-center">
           <h2 className="text-xl font-bold text-pink-600 flex items-center gap-2 halo-text">
             🛍️ Shop
           </h2>

@@ -19,17 +19,16 @@ class SoundManager {
   init() {
     if (this.initialized || typeof window === "undefined") return;
 
-    // this.bgm = new Audio("/audio/bgm.mp3");
+    // this.bgm = new Audio("/sound/bgm.mp3");
     // this.bgm.loop = true;
     // this.bgm.volume = 0.3;
 
-    // const soundEffects = ["click", "success", "fail", "pop"];
-    // soundEffects.forEach((name) => {
-    // Temporary: Audio files are missing, so we won't load them to prevent 404 errors.
-    // const audio = new Audio(`/audio/${name}.mp3`);
-    // audio.preload = "auto";
-    // this.sounds.set(name, audio);
-    // });
+    const soundEffects = ["click", "success", "fail", "pop"];
+    soundEffects.forEach((name) => {
+      const audio = new Audio(`/sound/${name}.wav`);
+      audio.preload = "auto";
+      this.sounds.set(name, audio);
+    });
 
     this.initialized = true;
   }

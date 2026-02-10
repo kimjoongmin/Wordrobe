@@ -1,13 +1,15 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import Draggable from "react-draggable";
-import AvatarDisplay from "@/components/AvatarDisplay";
+import React, { useState, useEffect } from "react";
+// import Draggable from "react-draggable"; // Removed
+// import AvatarDisplay from "@/components/AvatarDisplay"; // Removed
 import SentenceBuilder from "@/components/SentenceBuilder";
+import AvatarStage from "@/components/AvatarStage";
+import LevelSelector from "@/components/LevelSelector";
 import Shop from "@/components/Shop";
 import Header from "@/components/Header";
 import SideMenu from "@/components/SideMenu";
-import { ShopItem, fetchSentences, BACKGROUND_ITEMS } from "@/data/gameData"; // Removed LEVELS import
+import { ShopItem, fetchSentences } from "@/data/gameData"; // Removed LEVELS & BACKGROUND_ITEMS import
 import sentencesData from "@/data/sentences.json"; // Direct Import (Simulates API)
 import { useKakaoBrowserEscape } from "@/hooks/useKakaoBrowserEscape";
 import { soundManager } from "@/utils/SoundManager";
@@ -40,7 +42,7 @@ export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const [isHydrated, setIsHydrated] = useState(false);
-  const avatarRef = useRef<HTMLDivElement>(null);
+  // const avatarRef = useRef<HTMLDivElement>(null); // Removed
 
   // --- Persistence Logic ---
   useEffect(() => {
@@ -279,33 +281,10 @@ export default function Home() {
         <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col ">
           {/* --- 3. Avatar Visibility Fix --- */}
           {/* Added min-height and proper scaling to ensure it's never 0 height */}
-          <div className="w-full flex justify-center bg-transparent shrink-0">
-            <div className="relative w-full aspect-[4/3] max-h-[400px] flex items-center justify-center overflow-hidden md:rounded-3xl">
-              {/* Background Layer */}
-              <div
-                className="absolute inset-0 transition-all duration-500 ease-out z-0"
-                style={
-                  BACKGROUND_ITEMS.find((b) => b.id === equippedBackground)
-                    ?.style || { background: "transparent" }
-                }
-              />
-              {/* Inner container: fixed size for Avatar */}
-              <Draggable nodeRef={avatarRef} bounds="parent">
-                <div
-                  ref={avatarRef}
-                  className="relative w-[220px] h-[220px] aspect-square drop-shadow-2xl z-10 cursor-move active:cursor-grabbing"
-                >
-                  {/* Only render avatar after hydration to prevent flicker */}
-                  {isHydrated && (
-                    <AvatarDisplay
-                      avatarId={equippedAvatar}
-                      className="w-full h-full object-contain pointer-events-none"
-                    />
-                  )}
-                </div>
-              </Draggable>
-            </div>
-          </div>
+          <AvatarStage
+            equippedAvatar={equippedAvatar}
+            equippedBackground={equippedBackground}
+          />
 
           {/* Dynamic Content Section */}
           <div className="flex-1 bg-white/60 backdrop-blur-md  shadow-[0_-5px_20px_rgba(0,0,0,0.05)] border-t border-white/80 p-4 min-h-[450px] pb-20">
@@ -316,34 +295,14 @@ export default function Home() {
                   {/* Restored Dropdown in Header */}
                   <div className="flex items-center gap-2">
                     <h2 className="text-2xl font-black text-gray-700">Level</h2>
-                    <div className="relative">
-                      <select
-                        value={currentLevelId}
-                        onChange={(e) => {
-                          soundManager.playSound("click");
-                          setCurrentLevelId(Number(e.target.value));
-                        }}
-                        className="appearance-none bg-pink-100 border border-pink-200 text-pink-600 font-bold py-1 pl-3 pr-8 rounded-full text-lg focus:outline-none focus:ring-2 focus:ring-pink-400"
-                      >
-                        {/* 10 Distinct Levels */}
-                        {Array.from({ length: 10 }, (_, i) => i + 1).map(
-                          (id) => (
-                            <option key={id} value={id}>
-                              {id}
-                            </option>
-                          ),
-                        )}
-                      </select>
-                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-pink-500">
-                        <svg
-                          className="fill-current h-4 w-4"
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 20 20"
-                        >
-                          <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-                        </svg>
-                      </div>
-                    </div>
+                    <LevelSelector
+                      currentLevelId={currentLevelId}
+                      levels={Array.from({ length: 10 }, (_, i) => ({
+                        id: i + 1,
+                      }))}
+                      onLevelChange={setCurrentLevelId}
+                      colorTheme="pink"
+                    />
                   </div>
 
                   <span className="text-xs font-bold text-gray-400 uppercase tracking-widest hidden md:block">

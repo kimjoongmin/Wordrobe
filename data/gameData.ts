@@ -29,6 +29,17 @@ export interface Sentence {
   english: string | string[];
 }
 
+export interface WordData {
+  id: string;
+  text: string;
+}
+
+export interface VocabLevel {
+  id: number;
+  description: string;
+  words: { korean: string; english: string }[];
+}
+
 // 🔴 TODO: Replace this with your own Google Sheet "Published to Web" CSV link
 // Example: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ.../pub?output=csv"
 export const GOOGLE_SHEET_URL = "";
@@ -145,6 +156,64 @@ export const SHOP_ITEMS: ShopItem[] = Array.from({ length: 20 }, (_, i) => ({
   ),
 }));
 
+export const VOCAB_LEVELS: VocabLevel[] = [
+  {
+    id: 1,
+    description: "Level 1: 3-Letter Words",
+    words: [
+      { korean: "개", english: "dog" },
+      { korean: "고양이", english: "cat" },
+      { korean: "버스", english: "bus" },
+      { korean: "해", english: "sun" },
+      { korean: "자물쇠", english: "key" },
+    ],
+  },
+  {
+    id: 2,
+    description: "Level 2: 4-Letter Words",
+    words: [
+      { korean: "책", english: "book" },
+      { korean: "나무", english: "tree" },
+      { korean: "오리", english: "duck" },
+      { korean: "사자", english: "lion" },
+      { korean: "별", english: "star" },
+    ],
+  },
+  {
+    id: 3,
+    description: "Level 3: 5-Letter Words",
+    words: [
+      { korean: "사과", english: "apple" },
+      { korean: "물", english: "water" },
+      { korean: "집", english: "house" },
+      { korean: "빵", english: "bread" },
+      { korean: "초록색", english: "green" },
+    ],
+  },
+  {
+    id: 4,
+    description: "Level 4: Animals",
+    words: [
+      { korean: "호랑이", english: "tiger" },
+      { korean: "얼룩말", english: "zebra" },
+      { korean: "원숭이", english: "monkey" },
+      { korean: "토끼", english: "rabbit" },
+      { korean: "panda", english: "panda" },
+    ],
+  },
+  {
+    id: 5,
+    description: "Level 5: Fruits",
+    words: [
+      { korean: "바나나", english: "banana" },
+      { korean: "포도", english: "grape" },
+      { korean: "오렌지", english: "orange" },
+      { korean: "레몬", english: "lemon" },
+      { korean: "복숭아", english: "peach" },
+    ],
+  },
+];
+
 export const BACKGROUND_ITEMS: ShopItem[] = [
   {
     id: "bg_default", // Default (Hidden/Empty)
@@ -177,9 +246,13 @@ export const BACKGROUND_ITEMS: ShopItem[] = [
       name: titles[i],
       type: "background" as const,
       cost: 1000 * num,
-      imagePath: `/assets/background_room/background_room${formattedNum}.png`,
+      imagePath: getAssetPath(
+        `/assets/background_room/background_room${formattedNum}.png`,
+      ),
       style: {
-        backgroundImage: `url(/assets/background_room/background_room${formattedNum}.png)`,
+        backgroundImage: `url(${getAssetPath(
+          `/assets/background_room/background_room${formattedNum}.png`,
+        )})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
