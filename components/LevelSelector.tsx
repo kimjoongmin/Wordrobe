@@ -55,7 +55,7 @@ export default function LevelSelector({
           soundManager.playSound("click");
           setIsOpen(!isOpen);
         }}
-        className={`appearance-none border-2 font-black py-1 pl-4 pr-10 rounded-full text-lg focus:outline-none flex items-center gap-2 relative jelly-active-click jelly-depth-gray ${themeClasses.button}`}
+        className={`appearance-none border-2 font-black py-1 pl-4 rounded-full text-lg focus:outline-none flex items-center gap-2 relative jelly-active-click jelly-depth-gray ${themeClasses.button}`}
         type="button"
       >
         <div className="jelly-gloss-layer opacity-40" />
