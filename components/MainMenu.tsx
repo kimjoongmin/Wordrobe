@@ -13,7 +13,7 @@ export default function MainMenu({ onPlay, onShop }: MainMenuProps) {
     <div className="fixed inset-0 z-40 flex flex-col items-center justify-between p-8 overflow-hidden select-none">
       {/* Background Image */}
       <img
-        src={getAssetPath("/assets/theme/background.png")}
+        src={getAssetPath("/assets/theme/background.jpg")}
         alt="Background"
         className="absolute inset-0 w-full h-full object-cover -z-20"
       />

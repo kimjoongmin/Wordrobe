@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import confetti from "canvas-confetti"; // Import confetti
 import { soundManager } from "@/utils/SoundManager";
+import { incrementStat } from "@/utils/dailyStats";
 
 // Define SpeechRecognition types locally since they are not standard in all TS environments yet
 interface SpeechRecognitionEvent {
@@ -278,6 +279,7 @@ export default function SentenceBuilder({
 
   const handleHintClick = () => {
     if (isSuccess || isWrong) return;
+    soundManager.playSound("click");
     const success = onHint();
     if (success) {
       const target = currentSentence.english.join(" ");
@@ -287,7 +289,7 @@ export default function SentenceBuilder({
 
   const handleWordClick = (wordText: string, wordId: string) => {
     if (isSuccess) return;
-    soundManager.playSound("pop");
+    soundManager.playSound("pop", 0.9);
     setSelectedWords((prev) => [...prev, wordText]);
     setAvailableWords((prev) => prev.filter((w) => w.id !== wordId));
     setIsWrong(false);
@@ -295,6 +297,7 @@ export default function SentenceBuilder({
 
   const handleReset = () => {
     if (isSuccess) return;
+    soundManager.playSound("click");
     const rehydratedWords = currentSentence.english.map((word, idx) => ({
       id: `${word}-${idx}`,
       text: word,
@@ -306,7 +309,7 @@ export default function SentenceBuilder({
   const handleRemoveWord = (wordText: string, idxToRemove: number) => {
     if (isSuccess) return;
     const newSelected = selectedWords.filter((_, i) => i !== idxToRemove);
-    soundManager.playSound("click");
+    soundManager.playSound("pop", 0.8);
     setSelectedWords(newSelected);
     setAvailableWords((prev) => [
       ...prev,
@@ -329,10 +332,11 @@ export default function SentenceBuilder({
 
       speak(target);
       successHandledRef.current = true;
+      incrementStat("sentence"); // Track daily stats
       onComplete(pointsPerAction);
     } else {
       setIsWrong(true);
-      soundManager.playSound("fail");
+      soundManager.playSound("fail", 0.3);
       setTimeout(() => {
         setIsWrong(false);
       }, 1000);

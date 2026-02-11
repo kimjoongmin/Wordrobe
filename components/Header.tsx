@@ -1,23 +1,29 @@
 "use client";
 
 import React from "react";
+import { soundManager } from "@/utils/SoundManager";
 
 interface HeaderProps {
   points: number;
   onMenuClick: () => void;
   onLogoClick?: () => void;
+  onPointsClick?: () => void;
 }
 
 export default function Header({
   points,
   onMenuClick,
   onLogoClick,
+  onPointsClick,
 }: HeaderProps) {
   return (
     <header className="flex justify-between items-center px-4 py-3 bg-white/70 backdrop-blur-xl shadow-sm border-b border-white/40 sticky top-0 z-40 shrink-0 h-14">
       {/* Left: Hamburger Menu */}
       <button
-        onClick={onMenuClick}
+        onClick={() => {
+          soundManager.playSound("click");
+          onMenuClick();
+        }}
         className="p-2 -ml-2 rounded-full hover:bg-white/50 active:scale-95 transition-all text-gray-600"
       >
         <svg
@@ -52,7 +58,10 @@ export default function Header({
 
       {/* Right: Points */}
       <div className="flex gap-2 items-center">
-        <div className="relative group active:scale-95 transition-all duration-200">
+        <div
+          className="relative group active:scale-95 transition-all duration-200 cursor-pointer"
+          onClick={onPointsClick}
+        >
           <div className="bg-gradient-to-b from-yellow-50 to-orange-50 px-3.5 py-1.5 rounded-2xl font-black text-yellow-700 jelly-depth-yellow border border-yellow-200 flex items-center gap-1.5 text-[15px] overflow-hidden relative">
             <div className="jelly-gloss-layer opacity-40" />
             <span className="relative z-10 drop-shadow-sm filter brightness-110 group-hover:animate-bounce-short">

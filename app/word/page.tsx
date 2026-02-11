@@ -11,9 +11,11 @@ import { ShopItem, VocabLevel } from "@/data/gameData"; // Removed VOCAB_LEVELS
 import wordsData from "@/data/words.json"; // Direct Import (Simulates API)
 import { useKakaoBrowserEscape } from "@/hooks/useKakaoBrowserEscape";
 import { soundManager } from "@/utils/SoundManager";
+import { useRouter } from "next/navigation";
 
 export default function WordPage() {
   useKakaoBrowserEscape();
+  const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [points, setPoints] = useState(0);
   const [currentLevelId, setCurrentLevelId] = useState(1);
@@ -28,6 +30,7 @@ export default function WordPage() {
   // Shop State
   const [ownedItems, setOwnedItems] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<"play" | "shop">("play");
+  const [cheatCount, setCheatCount] = useState(0);
 
   // --- Persistence Logic ---
   useEffect(() => {
@@ -172,7 +175,19 @@ export default function WordPage() {
         <Header
           points={points}
           onMenuClick={() => setIsMenuOpen(true)}
-          onLogoClick={() => soundManager.playSound("click")}
+          onLogoClick={() => {
+            soundManager.playSound("click");
+            router.push("/"); // Back to home
+          }}
+          onPointsClick={() => {
+            const newCount = cheatCount + 1;
+            setCheatCount(newCount);
+            if (newCount >= 11) {
+              setPoints((prev) => prev + 5000);
+              alert("🦸‍♂️ 아빠가 용돈 5000원 줬다! (Daddy's Chance Applied)");
+              setCheatCount(0); // Reset
+            }
+          }}
         />
 
         {/* Scrollable Content Area */}

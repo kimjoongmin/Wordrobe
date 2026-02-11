@@ -35,7 +35,7 @@ export default function SplashScreen({ onStart }: SplashScreenProps) {
     <div className="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center p-8 overflow-hidden">
       {/* Background Image */}
       <img
-        src={getAssetPath("/assets/theme/background.png")}
+        src={getAssetPath("/assets/theme/background.jpg")}
         alt="Background"
         className="absolute inset-0 w-full h-full object-cover -z-20"
       />

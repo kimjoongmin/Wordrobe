@@ -15,6 +15,7 @@ import { useKakaoBrowserEscape } from "@/hooks/useKakaoBrowserEscape";
 import { soundManager } from "@/utils/SoundManager";
 import SplashScreen from "@/components/SplashScreen";
 import MainMenu from "@/components/MainMenu";
+import { useRouter } from "next/navigation";
 
 interface LevelData {
   id: number;
@@ -25,6 +26,7 @@ interface LevelData {
 export default function Home() {
   // ✅ Redirect if in KakaoTalk browser
   useKakaoBrowserEscape();
+  const router = useRouter();
 
   const [points, setPoints] = useState(0); // Start at 0
   const [currentLevelId, setCurrentLevelId] = useState(1);
@@ -245,22 +247,24 @@ export default function Home() {
   };
 
   // --- Render ---
+  const handleStart = React.useCallback(() => {
+    setViewMode("menu");
+  }, []);
+
   if (viewMode === "splash") {
-    return <SplashScreen onStart={() => setViewMode("menu")} />;
+    return <SplashScreen onStart={handleStart} />;
   }
 
   if (viewMode === "menu") {
     return (
       <MainMenu
         onPlay={() => {
-          setActiveTab("play");
-          setViewMode("play");
           soundManager.playSound("click");
+          router.push("/sentence");
         }}
         onShop={() => {
-          setActiveTab("shop");
-          setViewMode("shop");
           soundManager.playSound("click");
+          router.push("/sentence?tab=shop");
         }}
       />
     );
@@ -313,11 +317,12 @@ export default function Home() {
           onMenuClick={() => setIsMenuOpen(true)}
           onLogoClick={() => {
             soundManager.playSound("click");
+            setViewMode("menu"); // Go to main menu on logo click
+          }}
+          onPointsClick={() => {
             const newCount = cheatCount + 1;
             setCheatCount(newCount);
-            // console.log("Cheat Count:", newCount); // Debug
-
-            if (newCount >= 10) {
+            if (newCount >= 11) {
               setPoints((prev) => prev + 5000);
               alert("🦸‍♂️ 아빠가 용돈 5000원 줬다! (Daddy's Chance Applied)");
               setCheatCount(0); // Reset
@@ -397,7 +402,7 @@ export default function Home() {
           <button
             onClick={() => {
               soundManager.playSound("click");
-              setActiveTab("play");
+              router.push("/sentence");
             }}
             className={`px-6 py-3 rounded-full font-bold text-sm transition-all flex items-center gap-2
                     ${

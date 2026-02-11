@@ -1,31 +1,178 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import Header from "@/components/Header";
 import SideMenu from "@/components/SideMenu";
 import AvatarStage from "@/components/AvatarStage";
+import ListeningBuilder from "@/components/ListeningBuilder";
+import LevelSelector from "@/components/LevelSelector";
+import Shop from "@/components/Shop";
+import { Level, ShopItem, fetchSentences, LEVELS } from "@/data/gameData";
 import { useKakaoBrowserEscape } from "@/hooks/useKakaoBrowserEscape";
 import { soundManager } from "@/utils/SoundManager";
+import { useSearchParams, useRouter } from "next/navigation";
+import { shuffleArray } from "@/utils/shuffleArray";
 
-export default function HearingPage() {
+function HearingContent() {
   useKakaoBrowserEscape();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const initialTab = searchParams.get("tab") === "shop" ? "shop" : "play";
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [points, setPoints] = useState(0);
+  const [currentLevelId, setCurrentLevelId] = useState(1);
+  const [isHydrated, setIsHydrated] = useState(false);
   const [equippedAvatar, setEquippedAvatar] = useState<string>("avatar_base");
   const [equippedBackground, setEquippedBackground] =
     useState<string>("bg_default");
 
+  const [levelData, setLevelData] = useState<Level | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [ownedItems, setOwnedItems] = useState<string[]>([]);
+  const [activeTab, setActiveTab] = useState<"play" | "shop">(initialTab);
+  const [cheatCount, setCheatCount] = useState(0);
+
+  // --- Persistence Logic ---
   useEffect(() => {
     const savedPoints = localStorage.getItem("wordrobe_points");
+    const savedLevel = localStorage.getItem("wordrobe_hearing_level");
+    const savedOwned = localStorage.getItem("wordrobe_owned");
     const savedEquipped = localStorage.getItem("wordrobe_equipped");
     const savedBg = localStorage.getItem("wordrobe_bg_equipped");
 
     if (savedPoints) setPoints(Number(savedPoints));
+    if (savedLevel) setCurrentLevelId(Number(savedLevel));
+    if (savedOwned) setOwnedItems(JSON.parse(savedOwned));
     if (savedEquipped) setEquippedAvatar(savedEquipped);
     if (savedBg) setEquippedBackground(savedBg);
 
+    setIsHydrated(true);
     soundManager.init();
   }, []);
+
+  // Save data whenever it changes
+  useEffect(() => {
+    if (!isHydrated) return;
+    localStorage.setItem("wordrobe_points", points.toString());
+  }, [points, isHydrated]);
+
+  useEffect(() => {
+    if (!isHydrated) return;
+    localStorage.setItem("wordrobe_hearing_level", currentLevelId.toString());
+  }, [currentLevelId, isHydrated]);
+
+  useEffect(() => {
+    if (!isHydrated) return;
+    localStorage.setItem("wordrobe_owned", JSON.stringify(ownedItems));
+  }, [ownedItems, isHydrated]);
+
+  useEffect(() => {
+    if (!isHydrated) return;
+    localStorage.setItem("wordrobe_equipped", equippedAvatar);
+  }, [equippedAvatar, isHydrated]);
+
+  useEffect(() => {
+    if (!isHydrated) return;
+    localStorage.setItem("wordrobe_bg_equipped", equippedBackground);
+  }, [equippedBackground, isHydrated]);
+
+  // --- Data Fetching ---
+  useEffect(() => {
+    const loadLevelData = async () => {
+      setLoading(true);
+      try {
+        // Use curated LEVELS for all levels 1-10
+        if (
+          currentLevelId >= 1 &&
+          currentLevelId <= 10 &&
+          LEVELS[currentLevelId - 1]
+        ) {
+          const level = LEVELS[currentLevelId - 1];
+          // Shuffle sentences for random order each time
+          setLevelData({
+            ...level,
+            sentences: shuffleArray(level.sentences),
+          });
+        } else {
+          // Fallback for levels beyond 10 (if ever needed)
+          const rawData = await fetchSentences();
+          if (!rawData || rawData.length === 0) {
+            console.warn(
+              "No dynamic sentence data available for levels beyond 10.",
+            );
+            setLevelData(null);
+            setLoading(false);
+            return;
+          }
+
+          const offset = (currentLevelId - 1) * 3;
+          const levelSentences = rawData.slice(offset, offset + 3);
+
+          setLevelData({
+            id: currentLevelId,
+            description: `Listening Level ${currentLevelId}`,
+            sentences: levelSentences.map((s) => ({
+              korean: s.korean,
+              english: Array.isArray(s.english)
+                ? s.english
+                : s.english.split(" "),
+            })),
+          });
+        }
+      } catch (err) {
+        console.error("Failed to load hearing data:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (isHydrated) {
+      loadLevelData();
+    }
+  }, [currentLevelId, isHydrated]);
+
+  const handleComplete = (earnedPoints: number) => {
+    setPoints((prev) => prev + earnedPoints);
+    soundManager.playSound("coin");
+  };
+
+  const handleLevelComplete = () => {
+    if (currentLevelId < 10) {
+      setCurrentLevelId((prev) => prev + 1);
+    }
+  };
+
+  const handlePurchase = (item: ShopItem) => {
+    if (points >= item.cost && !ownedItems.includes(item.id)) {
+      setPoints((prev) => prev - item.cost);
+      setOwnedItems((prev) => [...prev, item.id]);
+
+      // Auto-equip the purchased item
+      if (item.type === "avatar") {
+        setEquippedAvatar(item.id);
+      } else if (item.type === "background") {
+        setEquippedBackground(item.id);
+      }
+
+      soundManager.playSound("coin");
+      alert(`구매 완료! ${item.name}를 착용했습니다.`);
+    } else if (ownedItems.includes(item.id)) {
+      alert("이미 구매한 아이템입니다.");
+    } else {
+      soundManager.playSound("fail");
+      alert("포인트가 부족합니다!");
+    }
+  };
+
+  const handleEquip = (itemId: string, itemType: "avatar" | "background") => {
+    if (itemType === "avatar") {
+      setEquippedAvatar(itemId);
+    } else if (itemType === "background") {
+      setEquippedBackground(itemId);
+    }
+    soundManager.playSound("correct");
+  };
 
   return (
     <main className="h-screen w-full bg-slate-100 flex items-center justify-center font-sans overflow-hidden">
@@ -37,23 +184,136 @@ export default function HearingPage() {
         }}
       >
         <SideMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
-        <Header points={points} onMenuClick={() => setIsMenuOpen(true)} />
+        <Header
+          points={points}
+          onMenuClick={() => setIsMenuOpen(true)}
+          onLogoClick={() => {
+            soundManager.playSound("click");
+            router.push("/"); // Back to home on logo click
+          }}
+          onPointsClick={() => {
+            const newCount = cheatCount + 1;
+            setCheatCount(newCount);
+            if (newCount >= 11) {
+              setPoints((prev) => prev + 5000);
+              alert("🦸‍♂️ 아빠가 용돈 5000원 줬다! (Daddy's Chance Applied)");
+              setCheatCount(0); // Reset
+            }
+          }}
+        />
 
         {/* Scrollable Content Area */}
         <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col">
-          {/* Avatar Stage */}
           <AvatarStage
             equippedAvatar={equippedAvatar}
             equippedBackground={equippedBackground}
           />
 
-          <div className="flex-1 flex flex-col items-center justify-center text-center p-8 bg-white/60 backdrop-blur-md shadow-[0_-5px_20px_rgba(0,0,0,0.05)] border-t border-white/80 rounded-t-3xl mx-2 mb-2 min-h-[400px]">
-            <div className="text-6xl mb-4">🎧</div>
-            <h2 className="text-2xl font-bold text-gray-700 mb-2">리스닝</h2>
-            <p className="text-gray-500">학습 준비 중입니다...</p>
+          <div className="flex-1 bg-white/60 backdrop-blur-md shadow-[0_-5px_20px_rgba(0,0,0,0.05)] border-t border-white/80 p-4 pb-20 min-h-[400px]">
+            {activeTab === "play" ? (
+              <div className="h-full flex flex-col">
+                <div className="flex justify-between items-end mb-2">
+                  <h2 className="text-2xl font-black text-gray-700">
+                    Listening
+                  </h2>
+                  <LevelSelector
+                    currentLevelId={currentLevelId}
+                    levels={Array.from({ length: 10 }, (_, i) => ({
+                      id: i + 1,
+                    }))}
+                    onLevelChange={setCurrentLevelId}
+                    colorTheme="pink"
+                  />
+                </div>
+
+                {loading ? (
+                  <div className="flex-1 flex flex-col items-center justify-center gap-3">
+                    <div className="w-10 h-10 border-4 border-purple-200 border-t-purple-500 rounded-full animate-spin"></div>
+                    <p className="text-gray-400 font-bold animate-pulse text-xs uppercase">
+                      LOADING QUESTIONS...
+                    </p>
+                  </div>
+                ) : levelData ? (
+                  <ListeningBuilder
+                    key={levelData.id}
+                    level={levelData}
+                    onComplete={handleComplete}
+                    onLevelComplete={handleLevelComplete}
+                    onHint={() => true}
+                  />
+                ) : (
+                  <div className="flex-1 flex items-center justify-center text-red-400">
+                    Failed to load data.
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Shop
+                points={points}
+                ownedItems={ownedItems}
+                onBuy={handlePurchase}
+                onEquip={(item) => handleEquip(item.id, item.type)}
+                equippedAvatar={equippedAvatar}
+                equippedBackground={equippedBackground}
+              />
+            )}
           </div>
         </div>
+
+        <nav className="absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-white/90 backdrop-blur-xl p-1.5 rounded-full shadow-2xl border border-white/60 flex gap-1 z-50">
+          <button
+            onClick={() => {
+              soundManager.playSound("click");
+              setActiveTab("play");
+            }}
+            className={`px-6 py-3 rounded-full font-bold text-sm transition-all flex items-center gap-2
+              ${
+                activeTab === "play"
+                  ? "bg-gradient-to-r from-purple-500 to-violet-500 text-white shadow-md transform scale-105"
+                  : "text-gray-400 hover:bg-gray-100"
+              }
+            `}
+          >
+            <span>🎧</span> Play
+          </button>
+          <button
+            onClick={() => {
+              soundManager.playSound("click");
+              setActiveTab("shop");
+            }}
+            className={`px-6 py-3 rounded-full font-bold text-sm transition-all flex items-center gap-2
+              ${
+                activeTab === "shop"
+                  ? "bg-gradient-to-r from-yellow-400 to-orange-400 text-white shadow-md transform scale-105"
+                  : "text-gray-400 hover:bg-gray-100"
+              }
+            `}
+          >
+            <span>🛍️</span> Shop
+          </button>
+        </nav>
       </div>
     </main>
+  );
+}
+
+export default function HearingPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="h-screen w-full bg-slate-100 flex items-center justify-center font-sans overflow-hidden">
+          <div className="w-full max-w-md h-full bg-pink-50 flex flex-col relative shadow-2xl overflow-hidden md:rounded-3xl md:h-[95vh] md:border-8 md:border-gray-800 transition-all duration-500 ease-out">
+            <div className="flex-1 flex flex-col items-center justify-center gap-3">
+              <div className="w-10 h-10 border-4 border-purple-200 border-t-purple-500 rounded-full animate-spin"></div>
+              <p className="text-gray-400 font-bold animate-pulse text-xs uppercase">
+                LOADING...
+              </p>
+            </div>
+          </div>
+        </main>
+      }
+    >
+      <HearingContent />
+    </Suspense>
   );
 }

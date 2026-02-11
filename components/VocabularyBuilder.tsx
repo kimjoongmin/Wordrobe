@@ -28,7 +28,7 @@ export default function VocabularyBuilder({
   >([]);
   const [isWrong, setIsWrong] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-
+  const [isHintPeek, setIsHintPeek] = useState(false);
   const successHandledRef = useRef(false);
 
   const currentWord = level.words[currentWordIndex];
@@ -55,6 +55,7 @@ export default function VocabularyBuilder({
   }, [currentWordIndex, level]);
 
   const handleNext = () => {
+    soundManager.playSound("click");
     setIsSuccess(false);
 
     if (currentWordIndex < level.words.length - 1) {
@@ -106,7 +107,7 @@ export default function VocabularyBuilder({
 
   const handleLetterClick = (char: string, id: string) => {
     if (isSuccess) return;
-    soundManager.playSound("pop");
+    soundManager.playSound("pop", 0.9);
     setSelectedLetters((prev) => [...prev, { id, char }]);
     setAvailableLetters((prev) => prev.filter((l) => l.id !== id));
     setIsWrong(false);
@@ -114,18 +115,22 @@ export default function VocabularyBuilder({
 
   const handleRemoveLetter = (id: string, idxToRemove: number) => {
     if (isSuccess) return;
+    soundManager.playSound("click");
     const letterToRemove = selectedLetters[idxToRemove];
     const newSelected = selectedLetters.filter((_, i) => i !== idxToRemove);
-    soundManager.playSound("click");
+    soundManager.playSound("pop", 0.8);
     setSelectedLetters(newSelected);
     setAvailableLetters((prev) => [...prev, letterToRemove]);
   };
 
   const handleHintClick = () => {
-    if (isSuccess || isWrong) return;
+    if (isSuccess || isWrong || isHintPeek) return;
+    soundManager.playSound("click");
     const success = onHint();
     if (success) {
+      setIsHintPeek(true);
       speak(currentWord.english);
+      setTimeout(() => setIsHintPeek(false), 1000); // Show answer for 1 second
     }
   };
 
@@ -144,7 +149,7 @@ export default function VocabularyBuilder({
       onComplete(pointsPerAction);
     } else {
       setIsWrong(true);
-      soundManager.playSound("fail");
+      soundManager.playSound("fail", 0.3);
       setTimeout(() => {
         setIsWrong(false);
       }, 1000);
@@ -237,10 +242,11 @@ export default function VocabularyBuilder({
       </div>
 
       {/* Control Buttons */}
+      {/* Action Footer */}
       <div className="flex gap-4 w-full shrink-0 mt-auto pt-3 border-t border-gray-100/50">
         <button
           onClick={handleHintClick}
-          className="w-14 h-14 relative jelly-active-click group"
+          className="w-12 h-12 relative jelly-active-click group"
           title="Hint (-20 pts)"
         >
           <div className="absolute inset-0 bg-gradient-to-b from-yellow-50 to-yellow-200 border border-white rounded-2xl jelly-depth-yellow">
@@ -253,7 +259,7 @@ export default function VocabularyBuilder({
         <button
           onClick={checkWord}
           disabled={selectedLetters.length === 0}
-          className={`flex-1 h-14 relative jelly-active-click group ${
+          className={`flex-1 h-12 relative jelly-active-click group ${
             selectedLetters.length > 0 ? "" : "opacity-60 cursor-not-allowed"
           }`}
         >
@@ -262,27 +268,27 @@ export default function VocabularyBuilder({
               <div className="absolute inset-0 bg-gradient-to-b from-blue-400 to-blue-600 rounded-2xl border-t border-white/40 jelly-depth-gray shadow-[0_5px_0_#2563eb]">
                 <div className="jelly-gloss-layer opacity-50" />
               </div>
-              <div className="absolute inset-0 flex items-center justify-center font-black text-white text-lg tracking-wide pointer-events-none">
+              <div className="absolute inset-0 flex items-center justify-center font-black text-white text-lg tracking-wide pointer-events-none uppercase">
                 CHECK
               </div>
             </>
           ) : (
-            <div className="absolute inset-0 bg-gray-200 rounded-2xl border border-gray-300 flex items-center justify-center font-black text-gray-400 text-lg">
+            <div className="absolute inset-0 bg-gray-200 rounded-2xl border border-gray-300 flex items-center justify-center font-black text-gray-400 text-lg uppercase">
               CHECK
             </div>
           )}
         </button>
       </div>
 
-      {/* Success Overlay */}
-      {isSuccess && (
+      {/* Success/Hint Overlay */}
+      {(isSuccess || isHintPeek) && (
         <div className="absolute inset-0 bg-white/70 backdrop-blur-xl flex flex-col items-center justify-center p-6 z-40 animate-fade-in space-y-10">
           <div className="relative">
-            <h2 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-emerald-500 to-teal-500 drop-shadow-[0_2px_10px_rgba(16,185,129,0.2)]">
-              Correct!
+            <h2 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-500 to-purple-500 drop-shadow-[0_2px_10px_rgba(99,102,241,0.2)]">
+              {isHintPeek ? "Hint!" : "Correct!"}
             </h2>
             <div className="absolute -top-6 -right-6 text-4xl animate-bounce-short">
-              ✨
+              {isHintPeek ? "💡" : "✨"}
             </div>
           </div>
 
@@ -295,25 +301,30 @@ export default function VocabularyBuilder({
             </div>
           </div>
 
-          <div className="flex flex-col gap-4 w-full max-w-xs">
-            <button
-              onClick={handleNext}
-              className="w-full h-16 relative jelly-active-click group"
-            >
-              <div className="absolute inset-0 bg-gradient-to-b from-green-400 to-emerald-600 rounded-3xl border border-white/30 shadow-[0_8px_0_#059669]">
-                <div className="jelly-gloss-layer opacity-40" />
-              </div>
-              <div className="absolute inset-0 flex items-center justify-center gap-3 pointer-events-none">
-                <span className="text-xl font-black text-white drop-shadow-md">
-                  NEXT WORD
-                </span>
-                <span className="text-2xl">➡️</span>
-              </div>
-            </button>
-          </div>
+          {isSuccess && !isHintPeek && (
+            <div className="flex flex-col gap-4 w-full max-w-xs">
+              <button
+                onClick={handleNext}
+                className="w-full h-16 relative jelly-active-click group"
+              >
+                <div className="absolute inset-0 bg-gradient-to-b from-green-400 to-emerald-600 rounded-3xl border border-white/30 shadow-[0_8px_0_#059669]">
+                  <div className="jelly-gloss-layer opacity-40" />
+                </div>
+                <div className="absolute inset-0 flex items-center justify-center gap-3 pointer-events-none">
+                  <span className="text-xl font-black text-white drop-shadow-md">
+                    NEXT WORD
+                  </span>
+                  <span className="text-2xl">➡️</span>
+                </div>
+              </button>
+            </div>
+          )}
 
           <button
-            onClick={() => speak(currentWord.english)}
+            onClick={() => {
+              soundManager.playSound("click");
+              speak(currentWord.english);
+            }}
             className="text-gray-400 text-sm hover:text-gray-600 underline"
           >
             Hear it again 🔊
