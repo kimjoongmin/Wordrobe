@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { getAssetPath } from "@/utils/paths";
 
 interface SplashScreenProps {
   onStart: () => void;
@@ -31,10 +32,10 @@ export default function SplashScreen({ onStart }: SplashScreenProps) {
   }, [onStart]);
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-between p-8 overflow-hidden cursor-wait select-none">
+    <div className="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center p-8 overflow-hidden">
       {/* Background Image */}
       <img
-        src="/assets/theme/background.png"
+        src={getAssetPath("/assets/theme/background.png")}
         alt="Background"
         className="absolute inset-0 w-full h-full object-cover -z-20"
       />

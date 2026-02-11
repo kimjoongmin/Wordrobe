@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { getAssetPath } from "@/utils/paths";
 
 interface MainMenuProps {
   onPlay: () => void;
@@ -12,7 +13,7 @@ export default function MainMenu({ onPlay, onShop }: MainMenuProps) {
     <div className="fixed inset-0 z-40 flex flex-col items-center justify-between p-8 overflow-hidden select-none">
       {/* Background Image */}
       <img
-        src="/assets/theme/background.png"
+        src={getAssetPath("/assets/theme/background.png")}
         alt="Background"
         className="absolute inset-0 w-full h-full object-cover -z-20"
       />
@@ -32,40 +33,44 @@ export default function MainMenu({ onPlay, onShop }: MainMenuProps) {
       </div>
 
       {/* Action Buttons (Refined Jelly Style) */}
-      <div className="z-10 w-full max-w-sm flex flex-row justify-center gap-4 mb-16 animate-fade-in-up px-6">
+      <div className="z-10 w-full max-w-sm flex flex-row justify-center gap-5 mb-16 animate-fade-in-up px-6">
         {/* Play Button */}
         <button
           onClick={onPlay}
-          className="flex-1 group relative active:scale-95 transition-all duration-150"
+          className="flex-1 h-14 relative jelly-active-click group"
         >
-          <div className="relative bg-gradient-to-b from-cyan-400 to-blue-600 rounded-2xl p-[3px] shadow-[0_5px_15px_rgba(6,182,212,0.4)] border border-white/20">
-            <div className="bg-gradient-to-b from-cyan-300 to-blue-500 rounded-[calc(1rem-1px)] px-2 py-2.5 flex items-center justify-center gap-1.5 overflow-hidden relative">
-              {/* Glass Reflection */}
-              <div className="absolute top-0 inset-x-0 h-[45%] bg-gradient-to-b from-white/40 to-transparent"></div>
-
-              <span className="relative z-10 text-xl drop-shadow-sm">❄️</span>
-              <span className="relative z-10 text-lg font-black text-white drop-shadow-[0_2px_0_rgba(0,0,0,0.3)] tracking-tight">
-                PLAY
-              </span>
-            </div>
+          <div className="absolute inset-0 bg-gradient-to-b from-cyan-300 to-cyan-500 rounded-2xl border border-white/50 jelly-depth-gray shadow-[0_6px_0_#0891b2]">
+            <div className="jelly-gloss-layer opacity-60" />
+            {/* Specular highlights */}
+            <div className="absolute top-1.5 right-3 w-1.5 h-1.5 bg-white/40 rounded-full" />
+          </div>
+          <div className="absolute inset-0 flex items-center justify-center gap-2 pointer-events-none">
+            <span className="text-xl filter brightness-110 drop-shadow-sm">
+              ❄️
+            </span>
+            <span className="text-lg font-black text-white drop-shadow-md tracking-tight">
+              PLAY
+            </span>
           </div>
         </button>
 
         {/* Shop Button */}
         <button
           onClick={onShop}
-          className="flex-1 group relative active:scale-95 transition-all duration-150"
+          className="flex-1 h-14 relative jelly-active-click group"
         >
-          <div className="relative bg-gradient-to-b from-purple-400 to-indigo-600 rounded-2xl p-[3px] shadow-[0_5px_15px_rgba(124,58,237,0.4)] border border-white/20">
-            <div className="bg-gradient-to-b from-purple-300 to-indigo-500 rounded-[calc(1rem-1px)] px-2 py-2.5 flex items-center justify-center gap-1.5 overflow-hidden relative">
-              {/* Glass Reflection */}
-              <div className="absolute top-0 inset-x-0 h-[45%] bg-gradient-to-b from-white/40 to-transparent"></div>
-
-              <span className="relative z-10 text-xl drop-shadow-sm">💎</span>
-              <span className="relative z-10 text-lg font-black text-white drop-shadow-[0_2px_0_rgba(0,0,0,0.3)] tracking-tight">
-                SHOP
-              </span>
-            </div>
+          <div className="absolute inset-0 bg-gradient-to-b from-purple-400 to-purple-500 rounded-2xl border border-white/50 jelly-depth-gray shadow-[0_6px_0_#9333ea]">
+            <div className="jelly-gloss-layer opacity-60" />
+            {/* Specular highlights */}
+            <div className="absolute top-1.5 right-3 w-1.5 h-1.5 bg-white/40 rounded-full" />
+          </div>
+          <div className="absolute inset-0 flex items-center justify-center gap-2 pointer-events-none">
+            <span className="text-xl filter brightness-110 drop-shadow-sm">
+              💎
+            </span>
+            <span className="text-lg font-black text-white drop-shadow-md tracking-tight">
+              SHOP
+            </span>
           </div>
         </button>
       </div>

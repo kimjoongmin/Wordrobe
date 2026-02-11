@@ -72,14 +72,15 @@ export default function SideMenu({ isOpen, onClose }: SideMenuProps) {
                   key={item.path}
                   href={item.path}
                   onClick={onClose}
-                  className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 ${
+                  className={`flex items-center gap-4 px-4 py-3 rounded-xl duration-200 relative jelly-active-click ${
                     isActive
-                      ? "bg-pink-100 text-pink-600 font-bold shadow-sm"
-                      : "text-gray-600 hover:bg-gray-50 font-medium hover:text-gray-900"
+                      ? "bg-pink-100 text-pink-600 font-black jelly-depth-pink shadow-sm"
+                      : "text-gray-600 hover:bg-gray-50 font-bold hover:text-gray-900"
                   }`}
                 >
-                  <span className="text-xl">{item.icon}</span>
-                  <span>{item.name}</span>
+                  {isActive && <div className="jelly-gloss-layer opacity-30" />}
+                  <span className="text-xl relative z-10">{item.icon}</span>
+                  <span className="relative z-10">{item.name}</span>
                 </Link>
               );
             })}

@@ -55,12 +55,13 @@ export default function LevelSelector({
           soundManager.playSound("click");
           setIsOpen(!isOpen);
         }}
-        className={`appearance-none border font-bold py-1 pl-4 pr-8 rounded-full text-lg focus:outline-none focus:ring-2 flex items-center gap-2 ${themeClasses.button}`}
+        className={`appearance-none border-2 font-black py-1 pl-4 pr-10 rounded-full text-lg focus:outline-none flex items-center gap-2 relative jelly-active-click jelly-depth-gray ${themeClasses.button}`}
         type="button"
       >
-        <span>{currentLevelId}</span>
+        <div className="jelly-gloss-layer opacity-40" />
+        <span className="relative z-10">{currentLevelId}</span>
         <div
-          className={`absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none ${themeClasses.icon}`}
+          className={`absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none relative z-10 ${themeClasses.icon}`}
         >
           <svg
             className={`fill-current h-4 w-4 transform transition-transform duration-200 ${

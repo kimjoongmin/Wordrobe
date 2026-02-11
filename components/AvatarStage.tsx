@@ -36,14 +36,21 @@ export default function AvatarStage({
         <Draggable nodeRef={avatarRef} bounds="parent">
           <div
             ref={avatarRef}
-            className="relative w-[200px] h-[220px] aspect-square drop-shadow-2xl z-10 cursor-move active:cursor-grabbing"
+            className="relative w-[200px] h-[220px] z-10 cursor-move active:cursor-grabbing flex items-center justify-center pt-8"
           >
+            {/* Jelly Floor/Platform */}
+            <div className="absolute bottom-4 inset-x-4 h-8 bg-white/30 rounded-[100%] border-2 border-white/60 shadow-[0_4px_12px_rgba(0,0,0,0.1),inset_0_2px_4px_rgba(255,255,255,0.8)] z-0">
+              <div className="absolute top-1 inset-x-4 h-[40%] bg-white/40 rounded-full" />
+            </div>
+
             {/* Only render avatar after hydration to prevent flicker */}
             {isHydrated && (
-              <AvatarDisplay
-                avatarId={equippedAvatar}
-                className="w-full h-full object-contain pointer-events-none"
-              />
+              <div className="relative z-10 w-full h-full drop-shadow-[0_10px_10px_rgba(0,0,0,0.15)] filter brightness-105">
+                <AvatarDisplay
+                  avatarId={equippedAvatar}
+                  className="w-full h-full object-contain pointer-events-none"
+                />
+              </div>
             )}
           </div>
         </Draggable>

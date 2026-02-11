@@ -154,17 +154,19 @@ export default function VocabularyBuilder({
   return (
     <div className="flex flex-col items-center w-full max-w-lg mx-auto p-2 py-4 h-full relative">
       {/* Progress Bar */}
-      <div className="w-full h-2 bg-gray-200 rounded-full mb-5 shrink-0 overflow-hidden">
+      <div className="w-full h-3 bg-gray-200/50 rounded-full mb-5 shrink-0 overflow-hidden relative shadow-[inset_0_1px_3px_rgba(0,0,0,0.1)]">
         <div
-          className="h-full bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full transition-all duration-500 ease-out"
+          className="h-full bg-gradient-to-r from-blue-400 to-cyan-500 rounded-full transition-all duration-500 ease-out relative"
           style={{
             width: `${(currentWordIndex / level.words.length) * 100}%`,
           }}
-        />
+        >
+          <div className="absolute top-0 inset-x-0 h-[40%] bg-white/30 rounded-full" />
+        </div>
       </div>
 
       {/* Main Game Content */}
-      <div className="flex-1 w-full flex flex-col justify-center space-y-2 md:space-y-4 min-h-0 overflow-hidden">
+      <div className="flex-1 w-full flex flex-col justify-center space-y-2 md:space-y-4 min-h-0">
         <div className="w-full text-center space-y-2 shrink-0">
           <span className="text-xs font-bold text-gray-400 uppercase tracking-widest block">
             Spell this word
@@ -177,27 +179,28 @@ export default function VocabularyBuilder({
         {/* Selected Letters Area (Input) */}
         <div
           className={`
-            min-h-[60px] md:min-h-[70px] w-full bg-white/50 rounded-2xl border-2 border-dashed
-            flex flex-wrap items-center justify-center gap-2 p-3 transition-all duration-300 shrink-0
+            min-h-[60px] md:min-h-[70px] w-full bg-white/40 rounded-3xl border-2 border-dashed
+            flex flex-wrap items-center justify-center gap-2.5 p-3 transition-all duration-300 shrink-0
+            shadow-[inset_0_2px_8px_rgba(0,0,0,0.05)]
             ${
               isWrong
                 ? "border-red-300 bg-red-50/50 shake ring-2 ring-red-200"
-                : "border-gray-300"
+                : "border-gray-200"
             }
             ${
               isSuccess
-                ? "border-green-400 bg-green-50/50 scale-105 border-solid ring-4 ring-green-200/50"
+                ? "border-green-400 bg-green-50/50 scale-[1.02] border-solid ring-4 ring-green-200/50"
                 : ""
             }
             ${
               selectedLetters.length > 0 && !isWrong && !isSuccess
-                ? "border-blue-300 border-solid bg-white/80"
+                ? "border-blue-300/40 border-solid bg-white/60"
                 : ""
             }
         `}
         >
           {selectedLetters.length === 0 && !isSuccess && (
-            <span className="text-gray-400 text-sm font-medium animate-pulse">
+            <span className="text-gray-400 text-sm font-bold opacity-60 animate-pulse">
               Tap letters to spell
             </span>
           )}
@@ -205,27 +208,28 @@ export default function VocabularyBuilder({
             <button
               key={item.id}
               onClick={() => handleRemoveLetter(item.id, idx)}
-              className="bg-white shadow-sm px-2 py-1 md:px-3 md:py-1.5 rounded-xl font-bold text-gray-700 animate-pop-in border border-gray-100 hover:bg-red-50 transition-colors text-sm md:text-base"
+              className="relative grow-0"
             >
-              {item.char}
+              <div className="bg-white px-3 py-1.5 md:px-4 md:py-2 rounded-2xl font-bold text-gray-700 jelly-depth-white border border-gray-50 flex items-center justify-center text-sm md:text-base group-hover:bg-red-50 transition-colors">
+                <div className="jelly-gloss-layer opacity-40" />
+                <span className="relative z-10">{item.char}</span>
+              </div>
             </button>
           ))}
         </div>
 
-        <div className="flex-1 overflow-y-auto custom-scrollbar w-full min-h-0">
-          <div className="flex flex-wrap justify-center gap-2 content-start pb-2">
+        <div className="flex-1 overflow-y-auto custom-scrollbar w-full min-h-0 py-2">
+          <div className="flex flex-wrap justify-center gap-3 content-start pb-4">
             {availableLetters.map((item) => (
               <button
                 key={item.id}
                 onClick={() => handleLetterClick(item.char, item.id)}
-                className="
-                  bg-white hover:bg-gray-50 text-gray-600 font-bold py-1.5 px-2.5 md:py-2 md:px-4 rounded-xl md:rounded-2xl text-xs md:text-sm 
-                  shadow-[0_2px_0_0_rgba(0,0,0,0.1)] border-2 border-transparent hover:border-blue-100
-                  active:translate-y-[2px] active:shadow-none transition-all
-                  flex items-center justify-center
-                "
+                className="relative shrink-0"
               >
-                {item.char}
+                <div className="bg-white/90 text-gray-700 font-black py-2.5 px-4 md:py-3 md:px-6 rounded-2xl text-sm md:text-lg border border-white/80 jelly-depth-white flex flex-col items-center">
+                  <div className="jelly-gloss-layer opacity-50" />
+                  <span className="relative z-10">{item.char}</span>
+                </div>
               </button>
             ))}
           </div>
@@ -233,45 +237,78 @@ export default function VocabularyBuilder({
       </div>
 
       {/* Control Buttons */}
-      <div className="flex gap-3 w-full shrink-0 mt-auto pt-1 border-t border-gray-100/50">
+      <div className="flex gap-4 w-full shrink-0 mt-auto pt-3 border-t border-gray-100/50">
         <button
           onClick={handleHintClick}
-          className="w-14 h-14 flex items-center justify-center rounded-2xl bg-yellow-100 text-yellow-500 hover:bg-yellow-200 hover:text-yellow-600 transition-colors border-2 border-yellow-200"
+          className="w-14 h-14 relative jelly-active-click group"
           title="Hint (-20 pts)"
         >
-          💡
+          <div className="absolute inset-0 bg-gradient-to-b from-yellow-50 to-yellow-200 border border-white rounded-2xl jelly-depth-yellow">
+            <div className="jelly-gloss-layer opacity-60" />
+          </div>
+          <div className="absolute inset-0 flex items-center justify-center text-xl pointer-events-none">
+            💡
+          </div>
         </button>
         <button
           onClick={checkWord}
           disabled={selectedLetters.length === 0}
-          className={`flex-1 h-14 rounded-2xl font-black text-white shadow-lg transition-all active:scale-95 text-lg tracking-wide flex items-center justify-center gap-2 ${
-            selectedLetters.length > 0
-              ? "bg-gradient-to-r from-blue-500 to-cyan-500 shadow-blue-200 hover:shadow-blue-300"
-              : "bg-gray-200 text-gray-400 shadow-none cursor-not-allowed"
+          className={`flex-1 h-14 relative jelly-active-click group ${
+            selectedLetters.length > 0 ? "" : "opacity-60 cursor-not-allowed"
           }`}
         >
-          CHECK
+          {selectedLetters.length > 0 ? (
+            <>
+              <div className="absolute inset-0 bg-gradient-to-b from-blue-400 to-blue-600 rounded-2xl border-t border-white/40 jelly-depth-gray shadow-[0_5px_0_#2563eb]">
+                <div className="jelly-gloss-layer opacity-50" />
+              </div>
+              <div className="absolute inset-0 flex items-center justify-center font-black text-white text-lg tracking-wide pointer-events-none">
+                CHECK
+              </div>
+            </>
+          ) : (
+            <div className="absolute inset-0 bg-gray-200 rounded-2xl border border-gray-300 flex items-center justify-center font-black text-gray-400 text-lg">
+              CHECK
+            </div>
+          )}
         </button>
       </div>
 
       {/* Success Overlay */}
       {isSuccess && (
-        <div className="absolute inset-0 bg-white/95 backdrop-blur-md flex flex-col items-center justify-center p-6 z-40 animate-fade-in space-y-8">
-          <h2 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-600 drop-shadow-sm">
-            Correct!
-          </h2>
-
-          <div className="text-3xl font-black text-gray-700 text-center tracking-widest">
-            {currentWord.english.toUpperCase()}
+        <div className="absolute inset-0 bg-white/70 backdrop-blur-xl flex flex-col items-center justify-center p-6 z-40 animate-fade-in space-y-10">
+          <div className="relative">
+            <h2 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-emerald-500 to-teal-500 drop-shadow-[0_2px_10px_rgba(16,185,129,0.2)]">
+              Correct!
+            </h2>
+            <div className="absolute -top-6 -right-6 text-4xl animate-bounce-short">
+              ✨
+            </div>
           </div>
 
-          <div className="flex gap-4 w-full max-w-xs">
+          <div className="relative group">
+            <div className="bg-white/80 px-10 py-6 rounded-[2.5rem] border-2 border-white shadow-xl jelly-shadow">
+              <div className="jelly-gloss-layer opacity-30" />
+              <div className="text-4xl font-black text-gray-700 text-center tracking-[0.2em] relative z-10">
+                {currentWord.english.toUpperCase()}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-4 w-full max-w-xs">
             <button
               onClick={handleNext}
-              className="flex-1 h-20 rounded-2xl font-bold text-white shadow-xl transition-all active:scale-95 bg-gradient-to-b from-green-400 to-green-600 shadow-green-200 flex flex-col items-center justify-center gap-1"
+              className="w-full h-16 relative jelly-active-click group"
             >
-              <span className="text-3xl">➡️</span>
-              <span className="text-sm">Next Word</span>
+              <div className="absolute inset-0 bg-gradient-to-b from-green-400 to-emerald-600 rounded-3xl border border-white/30 shadow-[0_8px_0_#059669]">
+                <div className="jelly-gloss-layer opacity-40" />
+              </div>
+              <div className="absolute inset-0 flex items-center justify-center gap-3 pointer-events-none">
+                <span className="text-xl font-black text-white drop-shadow-md">
+                  NEXT WORD
+                </span>
+                <span className="text-2xl">➡️</span>
+              </div>
             </button>
           </div>
 

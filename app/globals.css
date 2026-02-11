@@ -61,21 +61,139 @@ html {
   user-select: none;
 }
 
-/* Glassmorphism Utilities */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes bounce-short {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+.animate-bounce-short {
+  animation: bounce-short 0.6s ease-in-out infinite;
+}
+
+/* Glassmorphism Utilities - Refined for Jelly */
 .glass {
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07),
+    inset 0 2px 4px rgba(255, 255, 255, 0.5);
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04),
+    inset 0 2px 4px rgba(255, 255, 255, 0.8);
+  border-radius: 1.5rem;
+}
+
+/* --- Universal 3D Jelly Styles --- */
+
+.jelly-gloss-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.45) 0%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Base Shadow Styles with Active States */
+.jelly-depth-pink {
+  box-shadow: 0 5px 0 0 #be185d, 0 10px 20px rgba(190, 24, 93, 0.2),
+    inset 0 2px 2px rgba(255, 255, 255, 0.5);
+  transition: box-shadow 0.1s ease, transform 0.1s ease;
+}
+
+.jelly-active-click:active .jelly-depth-pink {
+  box-shadow: 0 1px 0 0 #be185d, 0 2px 5px rgba(190, 24, 93, 0.1),
+    inset 0 2px 2px rgba(255, 255, 255, 0.5);
+}
+
+.jelly-depth-white {
+  box-shadow: 0 4px 0 0 #e5e7eb, 0 8px 15px rgba(0, 0, 0, 0.06),
+    inset 0 2px 2px rgba(255, 255, 255, 0.8);
+  transition: box-shadow 0.1s ease, transform 0.1s ease;
+}
+
+.jelly-active-click:active .jelly-depth-white {
+  box-shadow: 0 1px 0 0 #e5e7eb, 0 2px 5px rgba(0, 0, 0, 0.03),
+    inset 0 2px 2px rgba(255, 255, 255, 0.8);
+}
+
+.jelly-depth-yellow {
+  box-shadow: 0 5px 0 0 #eab308, 0 10px 20px rgba(234, 179, 8, 0.2),
+    inset 0 2px 2px rgba(255, 255, 255, 0.6);
+  transition: box-shadow 0.1s ease, transform 0.1s ease;
+}
+
+.jelly-active-click:active .jelly-depth-yellow {
+  box-shadow: 0 1px 0 0 #eab308, 0 2px 5px rgba(234, 179, 8, 0.1),
+    inset 0 2px 2px rgba(255, 255, 255, 0.6);
+}
+
+.jelly-depth-gray {
+  box-shadow: 0 4px 0 0 #d1d5db, 0 8px 15px rgba(0, 0, 0, 0.04),
+    inset 0 2px 2px rgba(255, 255, 255, 0.5);
+  transition: box-shadow 0.1s ease, transform 0.1s ease;
+}
+
+.jelly-active-click:active .jelly-depth-gray {
+  box-shadow: 0 1px 0 0 #d1d5db, 0 2px 5px rgba(0, 0, 0, 0.02),
+    inset 0 2px 2px rgba(255, 255, 255, 0.5);
+}
+
+.jelly-active-click {
+  transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.jelly-active-click:active {
+  transform: translateY(3px);
+}
+
+.jelly-active-click:active:after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.jelly-shadow {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1),
+    0 8px 10px -6px rgba(0, 0, 0, 0.1);
 }
 
 .halo-glow {

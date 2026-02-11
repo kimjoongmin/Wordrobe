@@ -41,17 +41,27 @@ export default function Header({
         className="absolute left-1/2 transform -translate-x-1/2 cursor-pointer select-none active:scale-95 transition-transform"
         onClick={onLogoClick}
       >
-        <h1 className="text-xl font-black tracking-tight">
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-violet-500 drop-shadow-sm">
+        <h1 className="text-2xl font-black tracking-tight relative group">
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-pink-500 via-purple-500 to-violet-500 drop-shadow-[0_2px_4px_rgba(236,72,153,0.3)] filter brightness-110">
             Wordrobe
           </span>
+          {/* Glossy shine overlay for text */}
+          <div className="absolute top-0 left-0 w-full h-[40%] bg-gradient-to-b from-white/40 to-transparent pointer-events-none rounded-t-lg opacity-80"></div>
         </h1>
       </div>
 
       {/* Right: Points */}
       <div className="flex gap-2 items-center">
-        <div className="bg-white/80 px-3 py-1 rounded-full font-bold text-yellow-600 shadow-inner border border-yellow-200 flex items-center gap-1 text-sm">
-          <span>💰</span> {points}
+        <div className="relative group active:scale-95 transition-all duration-200">
+          <div className="bg-gradient-to-b from-yellow-50 to-orange-50 px-3.5 py-1.5 rounded-2xl font-black text-yellow-700 jelly-depth-yellow border border-yellow-200 flex items-center gap-1.5 text-[15px] overflow-hidden relative">
+            <div className="jelly-gloss-layer opacity-40" />
+            <span className="relative z-10 drop-shadow-sm filter brightness-110 group-hover:animate-bounce-short">
+              💰
+            </span>
+            <span className="relative z-10 drop-shadow-[0_1px_0_rgba(255,255,255,0.8)]">
+              {points}
+            </span>
+          </div>
         </div>
       </div>
     </header>

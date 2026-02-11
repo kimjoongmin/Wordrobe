@@ -352,7 +352,7 @@ export default function SentenceBuilder({
       </div>
 
       {/* Main Game Content */}
-      <div className="flex-1 w-full flex flex-col justify-center space-y-1 md:space-y-2 min-h-0 overflow-hidden">
+      <div className="flex-1 w-full flex flex-col justify-center space-y-1 md:space-y-2 min-h-0 ">
         <div className="w-full text-center space-y-1 shrink-0">
           <span className="text-xs font-bold text-gray-400 uppercase tracking-widest block">
             Translate this
@@ -364,27 +364,28 @@ export default function SentenceBuilder({
 
         <div
           className={`
-            min-h-[50px] md:min-h-[70px] w-full bg-white/50 rounded-2xl border-2 border-dashed
-            flex flex-wrap items-center justify-center gap-2 p-2 transition-all duration-300 shrink-0
+            min-h-[60px] md:min-h-[80px] w-full bg-white/40 rounded-3xl border-2 border-dashed
+            flex flex-wrap items-center justify-center gap-2.5 p-3 transition-all duration-300 shrink-0
+            shadow-[inset_0_2px_8px_rgba(0,0,0,0.05)]
             ${
               isWrong
                 ? "border-red-300 bg-red-50/50 shake ring-2 ring-red-200"
-                : "border-gray-300"
+                : "border-gray-200"
             }
             ${
               isSuccess
-                ? "border-green-400 bg-green-50/50 scale-105 border-solid ring-4 ring-green-200/50"
+                ? "border-green-400 bg-green-50/50 scale-[1.02] border-solid ring-4 ring-green-200/50 shadow-lg"
                 : ""
             }
             ${
               selectedWords.length > 0 && !isWrong && !isSuccess
-                ? "border-pink-300 border-solid bg-white/80"
+                ? "border-pink-300/40 border-solid bg-white/60"
                 : ""
             }
         `}
         >
           {selectedWords.length === 0 && !isSuccess && (
-            <span className="text-gray-400 text-sm font-medium animate-pulse">
+            <span className="text-gray-400 text-sm font-bold opacity-60 animate-pulse">
               Tap words to build sentence
             </span>
           )}
@@ -392,67 +393,96 @@ export default function SentenceBuilder({
             <button
               key={idx}
               onClick={() => handleRemoveWord(word, idx)}
-              className="bg-white shadow-sm px-2 py-1 md:px-3 md:py-1.5 rounded-xl font-bold text-gray-700 animate-pop-in border border-gray-100 hover:bg-red-50 transition-colors text-sm md:text-base"
+              className="relative shrink-0"
             >
-              {word}
+              <div className="bg-white px-3 py-1.5 md:px-4 md:py-2 rounded-2xl font-bold text-gray-700 jelly-depth-white border border-gray-50 flex items-center justify-center text-sm md:text-base group-hover:bg-red-50 transition-colors">
+                <div className="jelly-gloss-layer opacity-40" />
+                <span className="relative z-10">{word}</span>
+              </div>
             </button>
           ))}
         </div>
 
-        <div className="flex-1 overflow-y-auto custom-scrollbar w-full min-h-0">
-          <div className="flex flex-wrap justify-center gap-2 content-start pb-2">
+        <div className="flex-1 overflow-y-auto custom-scrollbar w-full min-h-0 py-2">
+          <div className="flex flex-wrap justify-center gap-3 md:gap-4 content-start pb-4">
             {availableWords.map((word) => (
               <button
                 key={word.id}
                 onClick={() => handleWordClick(word.text, word.id)}
-                className="
-                  bg-white hover:bg-gray-50 text-gray-600 font-bold py-1.5 px-2.5 md:py-2 md:px-4 rounded-xl md:rounded-2xl text-xs md:text-sm 
-                  shadow-[0_2px_0_0_rgba(0,0,0,0.1)] border-2 border-transparent hover:border-pink-100
-                  active:translate-y-[2px] active:shadow-none transition-all
-                "
+                className="relative shrink-0"
               >
-                {word.text}
+                <div className="bg-white/90 text-gray-700 font-black py-2 px-3.5 md:py-2.5 md:px-6 rounded-2xl md:rounded-[1.25rem] text-sm md:text-lg border border-white/80 jelly-depth-white flex flex-col items-center">
+                  <div className="jelly-gloss-layer opacity-50" />
+                  <span className="relative z-10">{word.text}</span>
+                </div>
               </button>
             ))}
           </div>
         </div>
       </div>
 
-      <div className="flex gap-3 w-full shrink-0 mt-auto pt-1 border-t border-gray-100/50">
+      {/* Control Buttons - Compact 3D Jelly Style */}
+      <div className="flex gap-3 w-full shrink-0 mt-auto border-t border-gray-100/30 pt-3">
+        {/* Reset Button */}
         <button
           onClick={handleReset}
-          className="w-14 h-14 flex items-center justify-center rounded-2xl bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-gray-600 transition-colors"
+          className="w-12 h-12 relative jelly-active-click z-20 group"
           title="Reset"
         >
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            strokeWidth={2.5}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
-          </svg>
+          <div className="absolute inset-0 bg-gradient-to-b from-gray-50 to-gray-200 border border-white rounded-2xl jelly-depth-gray">
+            <div className="jelly-gloss-layer" />
+          </div>
+          <div className="absolute inset-0 flex items-center justify-center text-gray-400 group-hover:text-gray-600 transition-colors pointer-events-none">
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              strokeWidth={3}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+            </svg>
+          </div>
         </button>
+
+        {/* Hint Button */}
         <button
           onClick={handleHintClick}
-          className="w-14 h-14 flex items-center justify-center rounded-2xl bg-yellow-100 text-yellow-500 hover:bg-yellow-200 hover:text-yellow-600 transition-colors border-2 border-yellow-200"
+          className="w-12 h-12 relative jelly-active-click z-20 group"
           title="Hint (-20 pts)"
         >
-          💡
+          <div className="absolute inset-0 bg-gradient-to-b from-yellow-50 to-yellow-200 border border-white rounded-2xl jelly-depth-yellow">
+            <div className="jelly-gloss-layer" />
+          </div>
+          <div className="absolute inset-0 flex items-center justify-center text-xl pointer-events-none">
+            💡
+          </div>
         </button>
+
+        {/* Check Button */}
         <button
           onClick={checkSentence}
           disabled={selectedWords.length === 0}
-          className={`flex-1 h-14 rounded-2xl font-black text-white shadow-lg transition-all active:scale-95 text-lg tracking-wide flex items-center justify-center gap-2 ${
-            selectedWords.length > 0
-              ? "bg-gradient-to-r from-pink-500 to-purple-500 shadow-pink-200 hover:shadow-pink-300"
-              : "bg-gray-200 text-gray-400 shadow-none cursor-not-allowed"
+          className={`flex-1 h-12 relative jelly-active-click z-20 group ${
+            selectedWords.length === 0 ? "opacity-60 cursor-not-allowed" : ""
           }`}
         >
-          CHECK
+          {selectedWords.length > 0 ? (
+            <>
+              <div className="absolute inset-0 bg-gradient-to-b from-pink-400 to-pink-500 rounded-2xl border-t border-white/40 jelly-depth-pink">
+                <div className="jelly-gloss-layer" />
+              </div>
+              <div className="absolute inset-0 flex items-center justify-center font-black text-white text-lg tracking-wider pointer-events-none">
+                CHECK
+              </div>
+            </>
+          ) : (
+            <div className="absolute inset-0 bg-gray-200 rounded-2xl border border-gray-300 flex items-center justify-center font-black text-gray-400 text-lg">
+              CHECK
+            </div>
+          )}
         </button>
       </div>
 

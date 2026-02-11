@@ -43,39 +43,45 @@ export default function Shop({
         </div>
 
         {/* Shop Tabs */}
-        <div className="flex px-4 pb-2 gap-2">
+        <div className="flex px-4 pb-3 gap-3">
           <button
             onClick={() => {
               soundManager.playSound("click");
               setActiveShopTab("avatar");
             }}
-            className={`flex-1 py-1.5 rounded-lg text-sm font-bold transition-all ${
+            className={`flex-1 py-1.5 rounded-xl text-sm font-black transition-all relative jelly-active-click ${
               activeShopTab === "avatar"
-                ? "bg-pink-500 text-white shadow-md"
+                ? "text-white jelly-depth-pink bg-gradient-to-b from-pink-400 to-pink-600"
                 : "bg-white/40 text-gray-500 hover:bg-white/60"
             }`}
           >
-            Avatars
+            {activeShopTab === "avatar" && (
+              <div className="jelly-gloss-layer opacity-50" />
+            )}
+            <span className="relative z-10">Avatars</span>
           </button>
           <button
             onClick={() => {
               soundManager.playSound("click");
               setActiveShopTab("background");
             }}
-            className={`flex-1 py-1.5 rounded-lg text-sm font-bold transition-all ${
+            className={`flex-1 py-1.5 rounded-xl text-sm font-black transition-all relative jelly-active-click ${
               activeShopTab === "background"
-                ? "bg-purple-500 text-white shadow-md"
+                ? "text-white jelly-depth-gray bg-gradient-to-b from-indigo-500 to-indigo-700 shadow-[0_4px_0_#3730a3]"
                 : "bg-white/40 text-gray-500 hover:bg-white/60"
             }`}
           >
-            Backgrounds
+            {activeShopTab === "background" && (
+              <div className="jelly-gloss-layer opacity-40" />
+            )}
+            <span className="relative z-10">Backgrounds</span>
           </button>
         </div>
       </div>
 
       {/* Grid */}
-      <div className="flex-1 overflow-y-auto p-2 custom-scrollbar">
-        <div className="grid grid-cols-2 gap-3 pb-20">
+      <div className="flex-1 overflow-y-auto p-3 custom-scrollbar">
+        <div className="grid grid-cols-2 gap-4 pb-20">
           {displayedItems.map((item) => {
             const isOwned = ownedItems.includes(item.id) || item.cost === 0;
             const isEquipped =
@@ -87,17 +93,17 @@ export default function Shop({
               <div
                 key={item.id}
                 className={`
-                    flex flex-col p-3 rounded-2xl border transition-all touch-manipulation glass-card
+                    flex flex-col p-3 rounded-2xl border transition-all touch-manipulation glass-card relative overflow-hidden
                     ${
                       isOwned
                         ? "border-green-200 bg-green-50/30"
-                        : "border-white/50 hover:bg-white/40"
+                        : "border-white/50 hover:bg-white/40 shadow-sm"
                     }
                 `}
               >
                 {/* Item Preview */}
                 <div
-                  className={`w-full mb-3 overflow-hidden relative border border-white/60 shadow-inner flex items-center justify-center p-2 rounded-xl ${
+                  className={`w-full mb-3 overflow-hidden relative border border-white/60 shadow-inner flex items-center justify-center p-2 rounded-xl transition-all ${
                     item.type === "background"
                       ? "h-24"
                       : "aspect-square bg-white/40"
@@ -109,7 +115,7 @@ export default function Shop({
                       alt={
                         item.name || `Avatar ${item.id.replace("avatar", "")}`
                       }
-                      className="w-full h-full object-contain"
+                      className="w-full h-full object-contain drop-shadow-sm"
                       onError={(e) => {
                         (e.target as HTMLImageElement).src = getAssetPath(
                           "/assets/character/avatar_base.png",
@@ -128,7 +134,7 @@ export default function Shop({
                 </div>
 
                 <div className="mt-auto">
-                  <p className="text-xs font-bold text-gray-700 mb-2 truncate text-center">
+                  <p className="text-[11px] font-black text-gray-700 mb-2 truncate text-center uppercase tracking-tighter">
                     {item.name}
                   </p>
 
@@ -140,15 +146,20 @@ export default function Shop({
                       }}
                       disabled={isEquipped}
                       className={`
-                                w-full py-2 rounded-xl text-xs font-bold transition-all border border-white/20
+                                w-full py-2 rounded-xl text-xs font-black relative jelly-active-click
                                 ${
                                   isEquipped
-                                    ? "bg-gray-400/50 text-white cursor-not-allowed"
-                                    : "bg-gradient-to-r from-green-400 to-emerald-500 text-white shadow-lg active:scale-95"
+                                    ? "bg-gray-300 text-gray-500 cursor-not-allowed border-none"
+                                    : "bg-gradient-to-b from-green-400 to-emerald-500 text-white shadow-[0_4px_0_#10b981] border border-white/20"
                                 }
                             `}
                     >
-                      {isEquipped ? "Wearing" : "Wear"}
+                      {!isEquipped && (
+                        <div className="jelly-gloss-layer opacity-40" />
+                      )}
+                      <span className="relative z-10">
+                        {isEquipped ? "Wearing" : "Wear"}
+                      </span>
                     </button>
                   ) : (
                     <button
@@ -158,15 +169,20 @@ export default function Shop({
                       }}
                       disabled={points < item.cost}
                       className={`
-                                w-full py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition-all border border-white/20
+                                w-full py-2 rounded-xl text-[10px] md:text-xs font-black flex items-center justify-center gap-1 relative jelly-active-click
                                 ${
                                   points < item.cost
-                                    ? "bg-gray-200/50 text-gray-400"
-                                    : "bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-lg shadow-pink-200/50 active:scale-95"
+                                    ? "bg-gray-100 text-gray-400 border-none"
+                                    : "bg-gradient-to-b from-pink-400 to-rose-500 text-white shadow-[0_4px_0_#e11d48] border border-white/20"
                                 }
                             `}
                     >
-                      <span>Buy {item.cost}</span>
+                      {points >= item.cost && (
+                        <div className="jelly-gloss-layer opacity-40" />
+                      )}
+                      <span className="relative z-10 truncate px-1">
+                        Buy {item.cost}
+                      </span>
                     </button>
                   )}
                 </div>

@@ -112,10 +112,10 @@ export default function Home() {
       let rawData = await fetchSentences();
 
       if (!rawData || rawData.length === 0) {
-        console.log("Using local backup data.");
+        // console.log("Using local backup data.");
         rawData = sentencesData;
       } else {
-        console.log("Using Google Sheet data:", rawData.length, "sentences");
+        // console.log("Using Google Sheet data:", rawData.length, "sentences");
       }
 
       // 2. Calculate Difficulty for all sentences
